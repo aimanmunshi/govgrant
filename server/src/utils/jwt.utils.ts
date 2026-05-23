@@ -5,14 +5,14 @@ import { AuthUser } from '../types/index';
 
 export const generateAccessToken = (userId: number, role: string): string => {
   const options: SignOptions = {
-    expiresIn: env.ACCESS_TOKEN_EXPIRY as SignOptions['expiresIn'],
+    expiresIn: '15m',
   };
   return jwt.sign({ userId, role }, env.ACCESS_TOKEN_SECRET, options);
 };
 
 export const generateRefreshToken = (userId: number): string => {
   const options: SignOptions = {
-    expiresIn: env.REFRESH_TOKEN_EXPIRY as SignOptions['expiresIn'],
+    expiresIn: '7d',
   };
   return jwt.sign({ userId }, env.REFRESH_TOKEN_SECRET, options);
 };

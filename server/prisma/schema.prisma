@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  name          String
+  email         String         @unique
+  password      String
+  role          Role           @default(APPLICANT)
+  organization  String?
+  createdAt     DateTime       @default(now())
+
+  proposals     Proposal[]     @relation("ApplicantProposals")
+  reviews       Review[]
+  refreshTokens RefreshToken[]
+  activities    ActivityLog[]
+}
+
+enum Role {
+  ADMIN
+  REVIEWER
+  APPLICANT
+}
+
+model Proposal {
+  id            Int              @id @default(autoincrement())
+  title         String
+  description   String           @db.Text
+  trlLevel      Int
+  fundingAmount Float
+  status        ProposalStatus   @default(DRAFT)
+  domain        String
+  submittedAt   DateTime?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  applicantId   Int
+  applicant     User             @relation("ApplicantProposals", fields: [applicantId], references: [id])
+  milestones    Milestone[]
+  reviews       Review[]
+  activities    ActivityLog[]
+}
+
+enum ProposalStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  FUNDED
+}
+
+model Milestone {
+  id            Int               @id @default(autoincrement())
+  title         String
+  description   String?
+  dueDate       DateTime
+  status        MilestoneStatus   @default(PENDING)
+  fundRelease   Float
+  createdAt     DateTime          @default(now())
+
+  proposalId    Int
+  proposal      Proposal          @relation(fields: [proposalId], references: [id])
+}
+
+enum MilestoneStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+}
+
+model Review {
+  id          Int       @id @default(autoincrement())
+  score       Int
+  comments    String    @db.Text
+  createdAt   DateTime  @default(now())
+
+  proposalId  Int
+  proposal    Proposal  @relation(fields: [proposalId], references: [id])
+  reviewerId  Int
+  reviewer    User      @relation(fields: [reviewerId], references: [id])
+
+  @@unique([proposalId, reviewerId])
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model ActivityLog {
+  id          Int       @id @default(autoincrement())
+  action      String
+  description String
+  createdAt   DateTime  @default(now())
+
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
+  proposalId  Int?
+  proposal    Proposal? @relation(fields: [proposalId], references: [id])
+}

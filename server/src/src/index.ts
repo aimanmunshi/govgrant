@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import dotenv from 'dotenv';
+import { errorHandler } from './middleware/error.middleware';
 
 dotenv.config();
 
@@ -19,7 +20,6 @@ export const io = new Server(httpServer, {
   },
 });
 
-// Middleware
 app.use(helmet());
 app.use(morgan('dev'));
 app.use(cors({
@@ -29,12 +29,13 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// Health check route
 app.get('/', (req, res) => {
   res.json({ success: true, message: 'GovGrant API is running 🚀' });
 });
 
-// TODO: routes will be added here later
+// TODO: routes will be added here
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 

@@ -7,6 +7,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import dotenv from 'dotenv';
 import { errorHandler } from './middleware/error.middleware';
+import authRoutes from './routes/auth.routes';
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.get('/', (req, res) => {
 });
 
 // TODO: routes will be added here
+app.use('/api/auth', authRoutes);
 
 app.use(errorHandler);
 

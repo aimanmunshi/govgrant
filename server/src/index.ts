@@ -10,6 +10,7 @@ import { errorHandler } from './middleware/error.middleware';
 import authRoutes from './routes/auth.routes';
 import proposalRoutes from './routes/proposal.routes';
 import milestoneRoutes from './routes/milestone.routes';
+import reviewRoutes from './routes/review.routes';
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/proposals', proposalRoutes);
 app.use('/api', milestoneRoutes);
+app.use('/api', reviewRoutes);
 
 app.use(errorHandler);
 

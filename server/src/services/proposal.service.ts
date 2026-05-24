@@ -1,6 +1,7 @@
 import { prisma } from '../config/db';
 import { CreateProposalInput, UpdateProposalInput } from '../schemas/proposal.schema';
 import { ProposalStatus } from '@prisma/client';
+import { createActivityLog } from './user.service';
 
 export const getAllProposals = async (filters: {
   status?: ProposalStatus;
@@ -76,6 +77,14 @@ export const createProposal = async (
       status: 'DRAFT',
     },
   });
+
+  await createActivityLog(
+    applicantId,
+    'PROPOSAL_CREATED',
+    `New proposal "${proposal.title}" created`,
+    proposal.id
+  );
+
   return proposal;
 };
 
@@ -112,12 +121,25 @@ export const updateProposal = async (
 
 export const updateProposalStatus = async (
   id: number,
-  status: ProposalStatus
+  status: ProposalStatus,
+  adminId: number
 ) => {
   const proposal = await prisma.proposal.findUnique({ where: { id } });
   if (!proposal) throw new Error('Proposal not found');
 
-  return await prisma.proposal.update({ where: { id }, data: { status } });
+  const updated = await prisma.proposal.update({
+    where: { id },
+    data: { status },
+  });
+
+  await createActivityLog(
+    adminId,
+    'PROPOSAL_STATUS_CHANGED',
+    `Proposal "${proposal.title}" status changed to ${status}`,
+    id
+  );
+
+  return updated;
 };
 
 export const deleteProposal = async (id: number) => {

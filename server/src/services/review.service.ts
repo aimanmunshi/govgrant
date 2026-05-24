@@ -1,5 +1,6 @@
 import { prisma } from '../config/db';
 import { CreateReviewInput } from '../schemas/review.schema';
+import { createActivityLog } from './user.service';
 
 export const submitReview = async (
   proposalId: number,
@@ -16,7 +17,6 @@ export const submitReview = async (
     throw new Error('Reviews can only be submitted for proposals under review');
   }
 
-  // check if reviewer already reviewed this proposal
   const existingReview = await prisma.review.findUnique({
     where: {
       proposalId_reviewerId: { proposalId, reviewerId },
@@ -27,7 +27,7 @@ export const submitReview = async (
     throw new Error('You have already submitted a review for this proposal');
   }
 
-  return await prisma.review.create({
+  const review = await prisma.review.create({
     data: {
       score: data.score,
       comments: data.comments,
@@ -40,6 +40,15 @@ export const submitReview = async (
       },
     },
   });
+
+  await createActivityLog(
+    reviewerId,
+    'REVIEW_SUBMITTED',
+    `Review submitted for proposal "${proposal.title}" with score ${data.score}`,
+    proposalId
+  );
+
+  return review;
 };
 
 export const getReviewsByProposal = async (proposalId: number) => {
@@ -59,7 +68,6 @@ export const getReviewsByProposal = async (proposalId: number) => {
     orderBy: { createdAt: 'desc' },
   });
 
-  // calculate average score
   const averageScore =
     reviews.length > 0
       ? reviews.reduce((sum, r) => sum + r.score, 0) / reviews.length

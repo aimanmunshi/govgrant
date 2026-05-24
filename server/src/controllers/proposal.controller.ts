@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+
 import {
   getAllProposals,
   getProposalById,
@@ -10,6 +11,7 @@ import {
 } from '../services/proposal.service';
 
 import { sendSuccess, sendError } from '../utils/apiResponse';
+
 import { ProposalStatus } from '@prisma/client';
 
 /**
@@ -23,7 +25,7 @@ const getStringValue = (
 };
 
 /**
- * Safely convert route param to number
+ * Safely convert route/query param to number
  */
 const getNumberParam = (
   param: string | string[] | undefined
@@ -31,7 +33,7 @@ const getNumberParam = (
   const value = getStringValue(param);
 
   if (!value || isNaN(Number(value))) {
-    throw new Error('Invalid ID parameter');
+    throw new Error('Invalid numeric parameter');
   }
 
   return Number(value);
@@ -80,7 +82,11 @@ export const getProposals = async (
 
     const result = await getAllProposals(filters);
 
-    sendSuccess(res, result, 'Proposals fetched successfully');
+    sendSuccess(
+      res,
+      result,
+      'Proposals fetched successfully'
+    );
   } catch (error: any) {
     sendError(res, error.message, 500);
   }
@@ -94,9 +100,15 @@ export const getProposal = async (
   try {
     const proposalId = getNumberParam(req.params.id);
 
-    const proposal = await getProposalById(proposalId);
+    const proposal = await getProposalById(
+      proposalId
+    );
 
-    sendSuccess(res, proposal, 'Proposal fetched successfully');
+    sendSuccess(
+      res,
+      proposal,
+      'Proposal fetched successfully'
+    );
   } catch (error: any) {
     sendError(res, error.message, 404);
   }
@@ -181,7 +193,8 @@ export const changeProposalStatus = async (
 
     const proposal = await updateProposalStatus(
       proposalId,
-      req.body.status
+      req.body.status,
+      req.user!.userId
     );
 
     sendSuccess(

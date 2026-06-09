@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import dotenv from 'dotenv';
+import { execSync } from 'child_process';
 import { errorHandler } from './middleware/error.middleware';
 import { initializeSocket } from './socket/socket.handler';
 import authRoutes from './routes/auth.routes';
@@ -50,6 +51,16 @@ app.use('/api/users', userRoutes);
 app.use('/api/activity', activityRoutes);
 
 app.use(errorHandler);
+
+// run migrations on startup in production
+if (process.env.NODE_ENV === 'production') {
+  try {
+    execSync('npx prisma migrate deploy', { stdio: 'inherit' });
+    console.log('✅ Migrations applied');
+  } catch (error) {
+    console.error('❌ Migration error:', error);
+  }
+}
 
 const PORT = process.env.PORT || 5000;
 

@@ -1,6 +1,7 @@
 import { prisma } from '../config/db';
 import { CreateMilestoneInput, UpdateMilestoneInput } from '../schemas/milestone.schema';
 import { MilestoneStatus } from '@prisma/client';
+import { emitMilestoneUpdated } from '../socket/socket.events';
 
 export const getMilestonesByProposal = async (proposalId: number) => {
   const proposal = await prisma.proposal.findUnique({
@@ -54,6 +55,11 @@ export const updateMilestoneStatus = async (
     where: { id: milestoneId },
     data: { status: data.status as MilestoneStatus },
   });
+  emitMilestoneUpdated(
+  milestone.proposalId,
+  milestone.title,
+  data.status
+);
 
   // if all milestones for this proposal are completed, mark proposal as FUNDED
   if (data.status === 'COMPLETED') {

@@ -2,6 +2,9 @@ import { prisma } from '../config/db';
 import { CreateProposalInput, UpdateProposalInput } from '../schemas/proposal.schema';
 import { ProposalStatus } from '@prisma/client';
 import { createActivityLog } from './user.service';
+import {
+  emitProposalStatusChanged,
+} from '../socket/socket.events';
 
 export const getAllProposals = async (filters: {
   status?: ProposalStatus;
@@ -137,6 +140,13 @@ export const updateProposalStatus = async (
     'PROPOSAL_STATUS_CHANGED',
     `Proposal "${proposal.title}" status changed to ${status}`,
     id
+  );
+
+  emitProposalStatusChanged(
+    id,
+    status,
+    proposal.title,
+    proposal.applicantId
   );
 
   return updated;

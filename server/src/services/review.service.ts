@@ -1,6 +1,7 @@
 import { prisma } from '../config/db';
 import { CreateReviewInput } from '../schemas/review.schema';
 import { createActivityLog } from './user.service';
+import { emitReviewSubmitted } from '../socket/socket.events';
 
 export const submitReview = async (
   proposalId: number,
@@ -48,8 +49,17 @@ export const submitReview = async (
     proposalId
   );
 
+  emitReviewSubmitted(
+  proposalId,
+  proposal.title,
+  review.reviewer.name,
+  data.score
+);
+
   return review;
 };
+
+
 
 export const getReviewsByProposal = async (proposalId: number) => {
   const proposal = await prisma.proposal.findUnique({

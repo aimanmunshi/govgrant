@@ -2,9 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from './context/AuthContext'
-// Ignore missing type declarations for CSS side-effect import
-// TypeScript doesn't know about CSS modules here; silence the error
-// @ts-ignore
+// @ts-ignore: allow side-effect import of CSS without separate type declarations
 import './index.css'
 import App from './App'
 
@@ -16,6 +14,9 @@ const queryClient = new QueryClient({
     },
   },
 })
+
+// add dark class to html element
+document.documentElement.classList.add('dark')
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

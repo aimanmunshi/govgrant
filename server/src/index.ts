@@ -18,6 +18,16 @@ import activityRoutes from './routes/activity.routes';
 
 dotenv.config();
 
+// run migrations FIRST before anything else
+if (process.env.NODE_ENV === 'production') {
+  try {
+    execSync('npx prisma migrate deploy', { stdio: 'inherit' });
+    console.log('✅ Migrations applied');
+  } catch (error) {
+    console.error('❌ Migration error:', error);
+  }
+}
+
 const app = express();
 const httpServer = createServer(app);
 
@@ -51,16 +61,6 @@ app.use('/api/users', userRoutes);
 app.use('/api/activity', activityRoutes);
 
 app.use(errorHandler);
-
-// run migrations on startup in production
-if (process.env.NODE_ENV === 'production') {
-  try {
-    execSync('npx prisma migrate deploy', { stdio: 'inherit' });
-    console.log('✅ Migrations applied');
-  } catch (error) {
-    console.error('❌ Migration error:', error);
-  }
-}
 
 const PORT = process.env.PORT || 5000;
 

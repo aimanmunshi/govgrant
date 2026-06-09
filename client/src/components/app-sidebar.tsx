@@ -50,22 +50,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <Link to="/dashboard">
-                <div className="flex size-8 items-center justify-center rounded-lg bg-orange-500 text-white font-bold text-sm">
-                  G
-                </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold text-sm">GovGrant</span>
-                  <span className="text-xs text-muted-foreground">TTDF Platform</span>
-                </div>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
+  <SidebarMenu>
+    <SidebarMenuItem>
+      <SidebarMenuButton size="lg" asChild>
+        <Link to="/dashboard">
+          <div className="flex size-8 items-center justify-center rounded-lg bg-orange-500 text-white font-bold text-sm shrink-0">
+            G
+          </div>
+          <div className="grid flex-1 text-left text-sm leading-none group-data-[collapsible=icon]:hidden">
+            <span className="font-semibold text-sm">GovGrant</span>
+            <span className="text-xs text-muted-foreground">TTDF Platform</span>
+          </div>
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  </SidebarMenu>
+</SidebarHeader>
 
       <SidebarContent>
         {/* Main Navigation */}

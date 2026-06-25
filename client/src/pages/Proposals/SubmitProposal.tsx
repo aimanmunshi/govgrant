@@ -32,6 +32,7 @@ const SubmitProposal = () => {
     domain: 'Rural Broadband',
   })
 
+const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   
 
   const { mutate, isPending } = useMutation({
@@ -41,8 +42,17 @@ const SubmitProposal = () => {
       navigate(`/proposals/${data.id}`)
     },
     onError: (err: any) => {
-  console.log('Error response:', err.response?.data);
-  setError(err.response?.data?.message || 'Failed to create proposal')
+  const data = err.response?.data
+  if (data?.errors) {
+    // field level errors from Zod
+    const errors: Record<string, string> = {}
+    Object.entries(data.errors).forEach(([key, val]) => {
+      errors[key] = (val as string[])[0]
+    })
+    setFieldErrors(errors)
+  } else {
+    setError(data?.message || 'Failed to create proposal')
+  }
 },
   })
 
@@ -95,74 +105,95 @@ const SubmitProposal = () => {
             )}
 
             <div className="grid gap-2">
-              <Label>Project Title</Label>
-              <Input
-                name="title"
-                placeholder="Rural 5G Connectivity Project"
-                value={form.title}
-                onChange={handleChange}
-                required
-              />
-            </div>
+  <Label>Project Title</Label>
+  <Input
+    name="title"
+    placeholder="Rural 5G Connectivity Project"
+    value={form.title}
+    onChange={handleChange}
+    required
+    className={fieldErrors.title ? 'border-red-500' : ''}
+  />
+  {fieldErrors.title && (
+    <p className="text-xs text-red-400">{fieldErrors.title}</p>
+  )}
+</div>
 
-            <div className="grid gap-2">
-              <Label>Description</Label>
-              <textarea
-                name="description"
-                placeholder="Describe your project in detail..."
-                value={form.description}
-                onChange={handleChange}
-                required
-                rows={5}
-                className="w-full rounded-md bg-input border border-border text-foreground px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring resize-none"
-              />
-            </div>
+<div className="grid gap-2">
+  <Label>Description</Label>
+  <textarea
+    name="description"
+    placeholder="Describe your project in detail (minimum 20 characters)..."
+    value={form.description}
+    onChange={handleChange}
+    required
+    rows={5}
+    className={`w-full rounded-md bg-input border px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring resize-none ${fieldErrors.description ? 'border-red-500' : 'border-border'}`}
+  />
+  {fieldErrors.description && (
+    <p className="text-xs text-red-400">{fieldErrors.description}</p>
+  )}
+  <p className={`text-xs ${form.description.length < 20 ? 'text-red-400' : 'text-green-400'}`}>
+    {form.description.length}/20 minimum characters
+  </p>
+</div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label>Domain</Label>
-                <select
-                  name="domain"
-                  value={form.domain}
-                  onChange={handleChange}
-                  className="rounded-md bg-input border border-border text-foreground px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                >
-                  {domains.map(d => (
-                    <option key={d} value={d}>{d}</option>
-                  ))}
-                </select>
-              </div>
+<div className="grid grid-cols-2 gap-4">
+  <div className="grid gap-2">
+    <Label>Domain</Label>
+    <select
+      name="domain"
+      value={form.domain}
+      onChange={handleChange}
+      className="rounded-md bg-input border border-border text-foreground px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+    >
+      {domains.map(d => (
+        <option key={d} value={d}>{d}</option>
+      ))}
+    </select>
+    {fieldErrors.domain && (
+      <p className="text-xs text-red-400">{fieldErrors.domain}</p>
+    )}
+  </div>
 
-              <div className="grid gap-2">
-                <Label>TRL Level (1-9)</Label>
-                <Input
-                  name="trlLevel"
-                  type="number"
-                  min={1}
-                  max={9}
-                  value={form.trlLevel}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
+  <div className="grid gap-2">
+    <Label>TRL Level (1-9)</Label>
+    <Input
+      name="trlLevel"
+      type="number"
+      min={1}
+      max={9}
+      value={form.trlLevel}
+      onChange={handleChange}
+      required
+      className={fieldErrors.trlLevel ? 'border-red-500' : ''}
+    />
+    {fieldErrors.trlLevel && (
+      <p className="text-xs text-red-400">{fieldErrors.trlLevel}</p>
+    )}
+  </div>
+</div>
 
-            <div className="grid gap-2">
-              <Label>Funding Amount (₹)</Label>
-              <Input
-                name="fundingAmount"
-                type="number"
-                placeholder="10000000"
-                value={form.fundingAmount}
-                onChange={handleChange}
-                required
-              />
-              {form.fundingAmount > 0 && (
-                <p className="text-xs text-muted-foreground">
-                  ₹{(form.fundingAmount / 10000000).toFixed(2)} Crores
-                </p>
-              )}
-            </div>
+<div className="grid gap-2">
+  <Label>Funding Amount (₹)</Label>
+  <Input
+    name="fundingAmount"
+    type="number"
+    placeholder="10000000"
+    value={form.fundingAmount}
+    onChange={handleChange}
+    required
+    className={fieldErrors.fundingAmount ? 'border-red-500' : ''}
+  />
+  {fieldErrors.fundingAmount && (
+    <p className="text-xs text-red-400">{fieldErrors.fundingAmount}</p>
+  )}
+  {form.fundingAmount > 0 && (
+    <p className="text-xs text-muted-foreground">
+      ₹{(form.fundingAmount / 10000000).toFixed(2)} Crores
+    </p>
+  )}
+</div>
 
             <div className="flex gap-3 pt-2">
               <Button

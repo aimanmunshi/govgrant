@@ -26,8 +26,14 @@ export function LoginForm({
       await login(email, password)
       navigate('/dashboard')
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed')
-    } finally {
+  const data = err.response?.data
+  if (data?.errors) {
+    const firstError = Object.values(data.errors)[0] as string[]
+    setError(firstError[0])
+  } else {
+    setError(data?.message || 'Login failed')
+  }
+} finally {
       setIsLoading(false)
     }
   }

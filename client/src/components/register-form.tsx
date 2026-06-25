@@ -36,8 +36,14 @@ export function RegisterForm({
       await register(form)
       navigate('/login')
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed')
-    } finally {
+  const data = err.response?.data
+  if (data?.errors) {
+    const firstError = Object.values(data.errors)[0] as string[]
+    setError(firstError[0])
+  } else {
+    setError(data?.message || 'Registration failed')
+  }
+} finally {
       setIsLoading(false)
     }
   }

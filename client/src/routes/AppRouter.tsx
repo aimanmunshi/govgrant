@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
+import ProposalDetail from '../pages/Proposals/ProposalDetail'
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
@@ -74,6 +75,11 @@ const AppRouter = () => {
           </ProtectedRoute>
         } />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/proposals/:id" element={
+  <ProtectedRoute>
+    <AppLayout><ProposalDetail /></AppLayout>
+  </ProtectedRoute>
+} />
       </Routes>
     </BrowserRouter>
   );

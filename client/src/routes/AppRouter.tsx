@@ -76,10 +76,14 @@ const AppRouter = () => {
         } />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/proposals/:id" element={
-  <ProtectedRoute>
-    <AppLayout><ProposalDetail /></AppLayout>
-  </ProtectedRoute>
-} />
+          <ProtectedRoute>
+            <AppLayout><ProposalDetail /></AppLayout>
+          </ProtectedRoute>
+        } />
+        <Route
+  path="/proposals/:id/edit"
+  element={<SubmitProposal />}
+/>
       </Routes>
     </BrowserRouter>
   );

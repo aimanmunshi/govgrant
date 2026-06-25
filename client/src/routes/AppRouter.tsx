@@ -3,6 +3,14 @@ import { useAuth } from '../context/AuthContext';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
+import ProposalList from '../pages/Proposals/ProposalList';
+import SubmitProposal from '../pages/Proposals/SubmitProposal';
+import {
+  SidebarInset,
+  SidebarProvider,
+} from '@/components/ui/sidebar';
+import { AppSidebar } from '@/components/app-sidebar';
+import { SiteHeader } from '@/components/site-header';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
@@ -19,10 +27,29 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
-
   if (isLoading) return null;
   if (user) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
+};
+
+// Layout wrapper with sidebar
+const AppLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <SidebarProvider
+      style={{
+        "--sidebar-width": "calc(var(--spacing) * 72)",
+        "--header-height": "calc(var(--spacing) * 12)",
+      } as React.CSSProperties}
+    >
+      <AppSidebar variant="inset" />
+      <SidebarInset>
+        <SiteHeader />
+        <div className="flex flex-1 flex-col overflow-auto">
+          {children}
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  );
 };
 
 const AppRouter = () => {
@@ -31,7 +58,21 @@ const AppRouter = () => {
       <Routes>
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <AppLayout><Dashboard /></AppLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/proposals" element={
+          <ProtectedRoute>
+            <AppLayout><ProposalList /></AppLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/proposals/new" element={
+          <ProtectedRoute>
+            <AppLayout><SubmitProposal /></AppLayout>
+          </ProtectedRoute>
+        } />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>

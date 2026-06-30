@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/card'
 import { ArrowLeft, Plus, X } from 'lucide-react'
 import { MilestoneStatus } from '@/types'
+import { useLocation} from "react-router-dom";
 
 const statusOptions: MilestoneStatus[] = [
   'PENDING', 'IN_PROGRESS', 'COMPLETED', 'OVERDUE'
@@ -36,6 +37,7 @@ const MilestoneTracker = () => {
   const { id } = useParams()
   const proposalId = Number(id)
   const navigate = useNavigate()
+  const location = useLocation();
   const { user } = useAuth()
   const queryClient = useQueryClient()
 
@@ -109,12 +111,23 @@ const MilestoneTracker = () => {
 
   const canChangeStatus = user?.role === 'ADMIN'
 
+  const handleBack = () => {
+  const from = location.state?.from;
+
+  if (from === "proposal-detail") {
+    navigate(`/proposals/${id}`);
+    return;
+  }
+
+  navigate("/proposals");
+};
+
   return (
     <div className="flex flex-col gap-6 p-6 max-w-3xl mx-auto">
 
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate(`/proposals/${proposalId}`)}>
+        <Button variant="ghost" size="icon" onClick={handleBack}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex-1">

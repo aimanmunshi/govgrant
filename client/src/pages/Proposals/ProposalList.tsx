@@ -97,7 +97,7 @@ const ProposalList = () => {
             <div className="rounded-xl border border-border overflow-hidden">
                 <Table>
                     <TableHeader>
-                        <TableRow>
+                        <TableRow className="hover:bg-transparent">
                             <TableHead>Title</TableHead>
                             <TableHead>Domain</TableHead>
                             <TableHead>TRL</TableHead>
@@ -124,54 +124,73 @@ const ProposalList = () => {
                         ) : (
                             filtered.map((proposal) => (
                                 <TableRow
-  key={proposal.id}
-  className="hover:bg-muted/50"
->
-  <TableCell
-    className="font-medium max-w-[200px] truncate cursor-pointer"
-    onClick={() => navigate(`/proposals/${proposal.id}`)}
-  >
-    {proposal.title}
-  </TableCell>
+                                    key={proposal.id}
+                                    className="cursor-pointer hover:bg-muted/50"
+                                    onClick={() => navigate(`/proposals/${proposal.id}`)}
+                                >
+                                    <TableCell
+                                        className="font-medium max-w-[200px] truncate cursor-pointer"
 
-  <TableCell>{proposal.domain}</TableCell>
+                                    >
+                                        {proposal.title}
+                                    </TableCell>
 
-  <TableCell>
-    <TRLBadge level={proposal.trlLevel} />
-  </TableCell>
+                                    <TableCell>{proposal.domain}</TableCell>
 
-  <TableCell>
-    {formatCurrency(proposal.fundingAmount)}
-  </TableCell>
+                                    <TableCell>
+                                        <TRLBadge level={proposal.trlLevel} />
+                                    </TableCell>
 
-  <TableCell>
-    <StatusBadge status={proposal.status} />
-  </TableCell>
+                                    <TableCell>
+                                        {formatCurrency(proposal.fundingAmount)}
+                                    </TableCell>
 
-  <TableCell>
-    {proposal.applicant?.name ?? '-'}
-  </TableCell>
+                                    <TableCell>
+                                        <StatusBadge status={proposal.status} />
+                                    </TableCell>
 
-  <TableCell>
-    {new Date(proposal.createdAt).toLocaleDateString()}
-  </TableCell>
+                                    <TableCell>
+                                        {proposal.applicant?.name ?? '-'}
+                                    </TableCell>
 
-  <TableCell>
-    {user?.role === 'APPLICANT' &&
-      proposal.status === 'DRAFT' && (
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={(e) => {
-            e.stopPropagation()
-            navigate(`/proposals/${proposal.id}/edit`)
-          }}
-        >
-          Continue Draft
-        </Button>
-      )}
-  </TableCell>
-</TableRow>
+                                    <TableCell>
+                                        {new Date(proposal.createdAt).toLocaleDateString()}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    navigate(`/proposals/${proposal.id}/milestones`, {
+  state: {
+    from: "proposal-list",
+  },
+})
+                                                }}
+                                            >
+                                                View Milestones
+                                            </Button>
+
+                                            {user?.role === 'APPLICANT' &&
+                                                proposal.status === 'DRAFT' && (
+                                                    <Button
+                                                        size="sm"
+                                                        className="bg-orange-500 hover:bg-orange-600 text-white"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            navigate(`/proposals/${proposal.id}/edit`)
+                                                        }}
+                                                    >
+                                                        Continue Draft
+                                                    </Button>
+                                                )}
+                                        </div>
+                                    </TableCell>
+
+                                </TableRow>
                             ))
                         )}
                     </TableBody>

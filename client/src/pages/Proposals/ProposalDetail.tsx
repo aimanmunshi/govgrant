@@ -133,15 +133,14 @@ const ProposalDetail = () => {
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <p className="text-sm font-medium">{milestone.title}</p>
-                          <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${
-                            milestone.status === 'COMPLETED'
+                          <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${milestone.status === 'COMPLETED'
                               ? 'bg-green-500/10 text-green-400 border-green-500/20'
                               : milestone.status === 'IN_PROGRESS'
-                              ? 'bg-blue-500/10 text-blue-400 border-blue-500/20'
-                              : milestone.status === 'OVERDUE'
-                              ? 'bg-red-500/10 text-red-400 border-red-500/20'
-                              : 'bg-slate-500/10 text-slate-400 border-slate-500/20'
-                          }`}>
+                                ? 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                                : milestone.status === 'OVERDUE'
+                                  ? 'bg-red-500/10 text-red-400 border-red-500/20'
+                                  : 'bg-slate-500/10 text-slate-400 border-slate-500/20'
+                            }`}>
                             {milestone.status.replace('_', ' ')}
                           </span>
                         </div>
@@ -280,13 +279,12 @@ const ProposalDetail = () => {
                     size="sm"
                     disabled={isPending}
                     onClick={() => changeStatus(status)}
-                    className={`w-full justify-start ${
-                      status === 'REJECTED'
+                    className={`w-full justify-start ${status === 'REJECTED'
                         ? 'border-red-500/30 text-red-400 hover:bg-red-500/10'
                         : status === 'APPROVED' || status === 'FUNDED'
-                        ? 'border-green-500/30 text-green-400 hover:bg-green-500/10'
-                        : 'border-blue-500/30 text-blue-400 hover:bg-blue-500/10'
-                    }`}
+                          ? 'border-green-500/30 text-green-400 hover:bg-green-500/10'
+                          : 'border-blue-500/30 text-blue-400 hover:bg-blue-500/10'
+                      }`}
                   >
                     Move to {status.replace('_', ' ')}
                   </Button>
@@ -295,32 +293,38 @@ const ProposalDetail = () => {
             </Card>
           )}
           {/* Quick actions */}
-<Card>
-  <CardHeader>
-    <CardTitle className="text-base">Actions</CardTitle>
-  </CardHeader>
-  <CardContent className="flex flex-col gap-2">
-    <Button
-      variant="outline"
-      size="sm"
-      className="w-full justify-start"
-      onClick={() => navigate(`/proposals/${proposal.id}/milestones`)}
-    >
-      View Milestones
-    </Button>
-    {user?.role === 'REVIEWER' && proposal.status === 'UNDER_REVIEW' && (
-      <Button
-        variant="outline"
-        size="sm"
-        className="w-full justify-start border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
-        onClick={() => navigate(`/proposals/${proposal.id}/review`)}
-      >
-        Submit Review
-      </Button>
-    )}
-  </CardContent>
-</Card>
-          
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start"
+                onClick={() =>
+  navigate(`/proposals/${proposal.id}/milestones`, {
+    state: {
+      from: "proposal-detail",
+    },
+  })
+}
+              >
+                View Milestones
+              </Button>
+              {user?.role === 'REVIEWER' && proposal.status === 'UNDER_REVIEW' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full justify-start border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+                  onClick={() => navigate(`/proposals/${proposal.id}/review`)}
+                >
+                  Submit Review
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+
         </div>
       </div>
     </div>

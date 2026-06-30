@@ -18,11 +18,15 @@ export const getMilestonesByProposal = async (proposalId: number) => {
 
 export const createMilestone = async (
   proposalId: number,
+  applicantId: number,
   data: CreateMilestoneInput
-) => {
-  const proposal = await prisma.proposal.findUnique({
-    where: { id: proposalId },
-  });
+)=> {
+  const proposal = await prisma.proposal.findFirst({
+  where: {
+    id: proposalId,
+    applicantId,
+  },
+});
 
   if (!proposal) throw new Error('Proposal not found');
 

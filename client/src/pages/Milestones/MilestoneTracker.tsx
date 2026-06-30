@@ -106,11 +106,13 @@ const MilestoneTracker = () => {
   }
 
   const canAddMilestone =
-    user?.role === 'ADMIN' &&
-    (proposal?.status === 'APPROVED' || proposal?.status === 'FUNDED')
+  user?.role === 'APPLICANT' &&
+  proposal?.applicant?.id === user.id &&
+  (proposal?.status === 'APPROVED' || proposal?.status === 'FUNDED')
 
-  const canChangeStatus = user?.role === 'ADMIN'
-
+  const canChangeStatus =
+  user?.role === 'ADMIN' ||
+  user?.role === 'REVIEWER'
   const handleBack = () => {
   const from = location.state?.from;
 
@@ -127,25 +129,33 @@ const MilestoneTracker = () => {
 
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={handleBack}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold">Milestones</h1>
-          <p className="text-muted-foreground text-sm">
-            {proposal?.title ?? 'Loading...'}
-          </p>
-        </div>
-        {canAddMilestone && !showForm && (
-          <Button
-            onClick={() => setShowForm(true)}
-            className="bg-orange-500 hover:bg-orange-600 text-white"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Milestone
-          </Button>
-        )}
-      </div>
+  {!showForm && (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={handleBack}
+    >
+      <ArrowLeft className="h-4 w-4" />
+    </Button>
+  )}
+
+  <div className="flex-1">
+    <h1 className="text-2xl font-bold">Milestones</h1>
+    <p className="text-muted-foreground text-sm">
+      {proposal?.title ?? 'Loading...'}
+    </p>
+  </div>
+
+  {canAddMilestone && !showForm && (
+    <Button
+      onClick={() => setShowForm(true)}
+      className="bg-orange-500 hover:bg-orange-600 text-white"
+    >
+      <Plus className="h-4 w-4 mr-2" />
+      Add Milestone
+    </Button>
+  )}
+</div>
 
       {/* Add milestone form */}
       {showForm && (

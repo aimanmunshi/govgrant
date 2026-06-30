@@ -12,6 +12,8 @@ import {
 import { AppSidebar } from '@/components/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import ProposalDetail from '../pages/Proposals/ProposalDetail'
+import SubmitReview from '@/pages/Reviews/SubmitReview';
+import MilestoneTracker from '@/pages/Milestones/MilestoneTracker';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
@@ -80,12 +82,25 @@ const AppRouter = () => {
             <AppLayout><ProposalDetail /></AppLayout>
           </ProtectedRoute>
         } />
+        <Route path="/proposals/:id/milestones" element={
+          <ProtectedRoute>
+            <AppLayout><MilestoneTracker /></AppLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/proposals/:id/review" element={
+          <ProtectedRoute>
+            <AppLayout><SubmitReview /></AppLayout>
+          </ProtectedRoute>
+        } />
         <Route
-  path="/proposals/:id/edit"
-  element={<SubmitProposal />}
-/>
+          path="/proposals/:id/edit"
+          element={<SubmitProposal />}
+        />
       </Routes>
+
+
     </BrowserRouter>
+
   );
 };
 

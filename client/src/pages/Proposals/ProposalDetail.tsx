@@ -294,6 +294,33 @@ const ProposalDetail = () => {
               </CardContent>
             </Card>
           )}
+          {/* Quick actions */}
+<Card>
+  <CardHeader>
+    <CardTitle className="text-base">Actions</CardTitle>
+  </CardHeader>
+  <CardContent className="flex flex-col gap-2">
+    <Button
+      variant="outline"
+      size="sm"
+      className="w-full justify-start"
+      onClick={() => navigate(`/proposals/${proposal.id}/milestones`)}
+    >
+      View Milestones
+    </Button>
+    {user?.role === 'REVIEWER' && proposal.status === 'UNDER_REVIEW' && (
+      <Button
+        variant="outline"
+        size="sm"
+        className="w-full justify-start border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+        onClick={() => navigate(`/proposals/${proposal.id}/review`)}
+      >
+        Submit Review
+      </Button>
+    )}
+  </CardContent>
+</Card>
+          
         </div>
       </div>
     </div>

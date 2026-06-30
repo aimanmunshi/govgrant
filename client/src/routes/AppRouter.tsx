@@ -14,6 +14,7 @@ import { SiteHeader } from '@/components/site-header';
 import ProposalDetail from '../pages/Proposals/ProposalDetail'
 import SubmitReview from '@/pages/Reviews/SubmitReview';
 import MilestoneTracker from '@/pages/Milestones/MilestoneTracker';
+import MilestoneDashboard from "@/pages/Milestones/MilestoneDashboard";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
@@ -71,6 +72,16 @@ const AppRouter = () => {
             <AppLayout><ProposalList /></AppLayout>
           </ProtectedRoute>
         } />
+        <Route
+  path="/milestones"
+  element={
+    <ProtectedRoute>
+      <AppLayout>
+        <MilestoneDashboard />
+      </AppLayout>
+    </ProtectedRoute>
+  }
+/>
         <Route path="/proposals/new" element={
           <ProtectedRoute>
             <AppLayout><SubmitProposal /></AppLayout>
@@ -97,7 +108,8 @@ const AppRouter = () => {
           element={<SubmitProposal />}
         />
       </Routes>
-
+      
+        
 
     </BrowserRouter>
 

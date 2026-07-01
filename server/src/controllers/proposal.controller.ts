@@ -8,6 +8,7 @@ import {
   updateProposalStatus,
   deleteProposal,
   submitProposal,
+  assignReviewer,
 } from '../services/proposal.service';
 
 import { sendSuccess, sendError } from '../utils/apiResponse';
@@ -224,5 +225,27 @@ export const removeProposal = async (
     );
   } catch (error: any) {
     sendError(res, error.message, 400);
+  }
+};
+export const assignProposalReviewer = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const proposalId = Number(req.params.id);
+    const { reviewerId } = req.body;
+
+    const assignment = await assignReviewer(
+      proposalId,
+      reviewerId
+    );
+
+    sendSuccess(
+      res,
+      assignment,
+      "Reviewer assigned successfully"
+    );
+  } catch (err: any) {
+    sendError(res, err.message, 400);
   }
 };

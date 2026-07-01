@@ -41,13 +41,13 @@ export const getUsers = async (
   next: NextFunction
 ) => {
   try {
-    const users = await getAllUsers();
+    const role = getStringValue(
+      req.query.role as string | string[] | undefined
+    ) as Role | undefined;
 
-    sendSuccess(
-      res,
-      users,
-      'Users fetched successfully'
-    );
+    const users = await getAllUsers(role);
+
+    sendSuccess(res, users, 'Users fetched successfully');
   } catch (error: any) {
     sendError(res, error.message, 500);
   }

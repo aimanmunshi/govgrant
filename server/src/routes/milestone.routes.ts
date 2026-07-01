@@ -20,7 +20,7 @@ router.use(authenticate);
 router.get('/proposals/:id/milestones', getMilestones);
 router.post(
   '/proposals/:id/milestones',
-  authorize('ADMIN'),
+  authorize('APPLICANT'),
   validate(createMilestoneSchema),
   addMilestone
 );
@@ -28,7 +28,7 @@ router.post(
 // standalone milestone update
 router.patch(
   '/milestones/:id',
-  authorize('ADMIN'),
+  authorize('ADMIN', 'REVIEWER'),
   validate(updateMilestoneSchema),
   updateMilestone
 );

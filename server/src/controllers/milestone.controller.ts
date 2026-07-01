@@ -60,20 +60,26 @@ export const addMilestone = async (
   res: Response,
   next: NextFunction
 ) => {
-  try {
-    const proposalId = getNumberParam(req.params.id);
+try {
+  const proposalId = getNumberParam(req.params.id);
 
-    const milestone = await createMilestone(
-      proposalId,
-      req.body
-    );
+  const userId = (req.user as { id?: number } | undefined)?.id;
+  if (!userId) {
+    throw new Error('Unauthorized');
+  }
 
-    sendSuccess(
-      res,
-      milestone,
-      'Milestone created successfully',
-      201
-    );
+  const milestone = await createMilestone(
+    proposalId,
+    userId,
+    req.body
+  );
+
+  sendSuccess(
+    res,
+    milestone,
+    'Milestone created successfully',
+    201
+  );
   } catch (error: any) {
     sendError(res, error.message, 400);
   }

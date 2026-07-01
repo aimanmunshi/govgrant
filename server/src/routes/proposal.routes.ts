@@ -16,7 +16,7 @@ import {
   updateProposalSchema,
   updateProposalStatusSchema,
 } from '../schemas/proposal.schema';
-
+import { assignProposalReviewer } from '../controllers/proposal.controller';
 const router = Router();
 
 // all routes require authentication
@@ -30,4 +30,9 @@ router.patch('/:id', authorize('APPLICANT', 'ADMIN'), validate(updateProposalSch
 router.patch('/:id/status', authorize('ADMIN'), validate(updateProposalStatusSchema), changeProposalStatus);
 router.delete('/:id', authorize('ADMIN'), removeProposal);
 
+router.post(
+  "/:id/assign-reviewer",
+  authorize("ADMIN"),
+  assignProposalReviewer
+);
 export default router;

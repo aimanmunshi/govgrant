@@ -47,6 +47,17 @@ export interface Proposal {
     milestones: number;
     reviews: number;
   };
+  assignments?: {
+  id: number;
+  reviewerId: number;
+  assignedAt: string;
+  reviewer: {
+    id: number;
+    name: string;
+    email: string;
+  };
+}[];
+  
 }
 
 export interface Milestone {

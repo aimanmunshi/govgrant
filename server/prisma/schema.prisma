@@ -20,6 +20,7 @@ model User {
   reviews       Review[]
   refreshTokens RefreshToken[]
   activities    ActivityLog[]
+  assignments   ProposalAssignment[] @relation("AssignedReviews")
 }
 
 enum Role {
@@ -45,6 +46,7 @@ model Proposal {
   milestones    Milestone[]
   reviews       Review[]
   activities    ActivityLog[]
+  assignments   ProposalAssignment[]
 }
 
 enum ProposalStatus {
@@ -109,4 +111,15 @@ model ActivityLog {
   user        User      @relation(fields: [userId], references: [id])
   proposalId  Int?
   proposal    Proposal? @relation(fields: [proposalId], references: [id])
+}
+model ProposalAssignment {
+  id         Int      @id @default(autoincrement())
+  assignedAt DateTime @default(now())
+
+  proposalId Int
+  proposal   Proposal @relation(fields: [proposalId], references: [id])
+  reviewerId Int
+  reviewer   User     @relation("AssignedReviews", fields: [reviewerId], references: [id])
+
+  @@unique([proposalId, reviewerId])
 }

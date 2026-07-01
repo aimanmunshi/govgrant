@@ -15,6 +15,7 @@ import ProposalDetail from '../pages/Proposals/ProposalDetail'
 import SubmitReview from '@/pages/Reviews/SubmitReview';
 import MilestoneTracker from '@/pages/Milestones/MilestoneTracker';
 import MilestoneDashboard from "@/pages/Milestones/MilestoneDashboard";
+import ReviewsDashboard from "@/pages/Reviews/ReviewsDashboard";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
@@ -103,10 +104,16 @@ const AppRouter = () => {
             <AppLayout><SubmitReview /></AppLayout>
           </ProtectedRoute>
         } />
-        <Route
-          path="/proposals/:id/edit"
-          element={<SubmitProposal />}
-        />
+        <Route path="/proposals/:id/edit" element={
+  <ProtectedRoute>
+    <AppLayout><SubmitProposal /></AppLayout>
+  </ProtectedRoute>
+} />
+        <Route path="/reviews" element={
+  <ProtectedRoute>
+    <AppLayout><ReviewsDashboard /></AppLayout>
+  </ProtectedRoute>
+} />
       </Routes>
       
         

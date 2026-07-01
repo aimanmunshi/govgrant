@@ -1,8 +1,9 @@
 import { prisma } from '../config/db';
 import { Role } from '@prisma/client';
 
-export const getAllUsers = async () => {
+export const getAllUsers = async (role?: Role) => {
   return await prisma.user.findMany({
+    where: role ? { role } : undefined,
     select: {
       id: true,
       name: true,

@@ -1,6 +1,17 @@
 import axiosInstance from './axiosInstance';
 import { Proposal, PaginatedResponse } from '../types';
 
+export const assignReviewerApi = async (
+  proposalId: number,
+  reviewerId: number
+) => {
+  const response = await axiosInstance.post(
+    `/proposals/${proposalId}/assign-reviewer`,
+    { reviewerId }
+  );
+  return response.data;
+};
+
 export const getProposalsApi = async (filters?: {
   status?: string;
   domain?: string;
@@ -60,3 +71,4 @@ export const deleteProposalApi = async (id: number) => {
   const response = await axiosInstance.delete(`/proposals/${id}`);
   return response.data;
 };
+

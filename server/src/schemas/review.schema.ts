@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export const createReviewSchema = z.object({
+  milestoneId: z.number().int().positive('Milestone ID is required'),
   score: z
     .number()
     .int()
@@ -8,5 +9,7 @@ export const createReviewSchema = z.object({
     .max(100, 'Score cannot exceed 100'),
   comments: z.string().min(10, 'Comments must be at least 10 characters'),
 });
+
+
 
 export type CreateReviewInput = z.infer<typeof createReviewSchema>;

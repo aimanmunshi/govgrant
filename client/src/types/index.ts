@@ -83,6 +83,11 @@ export interface Review {
     name: string;
     email: string;
   };
+   milestoneId: number;        // ← add
+  milestone?: {               // ← add
+    id: number;
+    title: string;
+  };
 }
 
 export interface ActivityLog {
@@ -120,3 +125,4 @@ export interface PaginatedResponse<T> {
     totalPages: number;
   };
 }
+

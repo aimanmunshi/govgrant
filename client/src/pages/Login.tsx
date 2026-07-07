@@ -1,5 +1,6 @@
 import { GalleryVerticalEnd } from "lucide-react"
 import { LoginForm } from "@/components/login-form"
+import loginHeroImage from "@/assets/image.png"
 
 export default function LoginPage() {
   return (
@@ -21,8 +22,8 @@ export default function LoginPage() {
       </div>
       <div className="relative hidden bg-muted lg:block">
         <img
-          src="/placeholder.svg"
-          alt="Image"
+          src={loginHeroImage}
+          alt="Vidhana Soudha, Karnataka's legislative building"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>

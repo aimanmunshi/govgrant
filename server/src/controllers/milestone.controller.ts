@@ -63,7 +63,7 @@ export const addMilestone = async (
 try {
   const proposalId = getNumberParam(req.params.id);
 
-  const userId = (req.user as { id?: number } | undefined)?.id;
+  const userId = req.user?.userId;
   if (!userId) {
     throw new Error('Unauthorized');
   }
@@ -92,10 +92,12 @@ export const updateMilestone = async (
 ) => {
   try {
     const milestoneId = getNumberParam(req.params.id);
+    const actorId = req.user!.userId;
 
     const milestone = await updateMilestoneStatus(
       milestoneId,
-      req.body
+      req.body,
+      actorId
     );
 
     sendSuccess(

@@ -133,10 +133,19 @@ export const submitProposal = async (id: number, applicantId: number) => {
   if (proposal.status !== 'DRAFT')
     throw new Error('Only draft proposals can be submitted');
 
-  return await prisma.proposal.update({
+  const updated = await prisma.proposal.update({
     where: { id },
     data: { status: 'SUBMITTED', submittedAt: new Date() },
   });
+
+  await createActivityLog(
+    applicantId,
+    'PROPOSAL_SUBMITTED',
+    `Proposal "${updated.title}" submitted for review`,
+    id
+  );
+
+  return updated;
 };
 
 export const updateProposal = async (
@@ -191,38 +200,10 @@ export const deleteProposal = async (id: number) => {
 
   await prisma.proposal.delete({ where: { id } });
 };
-export const assignReviewerToProposal = async (
-  proposalId: number,
-  reviewerId: number
-) => {
-  const proposal = await prisma.proposal.findUnique({ where: { id: proposalId } });
-  if (!proposal) throw new Error('Proposal not found');
-
-  const reviewer = await prisma.user.findUnique({ where: { id: reviewerId } });
-  if (!reviewer || reviewer.role !== 'REVIEWER')
-    throw new Error('User is not a reviewer');
-
-  const assignment = await prisma.proposalAssignment.upsert({
-    where: { proposalId_reviewerId: { proposalId, reviewerId } },
-    create: { proposalId, reviewerId },
-    update: { assignedAt: new Date() },
-    include: {
-      reviewer: { select: { id: true, name: true, email: true } },
-    },
-  });
-
-  await createActivityLog(
-    reviewerId,
-    'REVIEWER_ASSIGNED',
-    `Reviewer assigned to proposal "${proposal.title}"`,
-    proposalId
-  );
-
-  return assignment;
-};
 export const assignReviewer = async (
   proposalId: number,
-  reviewerId: number
+  reviewerId: number,
+  adminId: number
 ) => {
   const proposal = await prisma.proposal.findUnique({
     where: { id: proposalId },
@@ -260,10 +241,19 @@ export const assignReviewer = async (
     throw new Error("Reviewer already assigned");
   }
 
-  return prisma.proposalAssignment.create({
+  const assignment = await prisma.proposalAssignment.create({
     data: {
       proposalId,
       reviewerId,
     },
   });
+
+  await createActivityLog(
+    adminId,
+    'REVIEWER_ASSIGNED',
+    `${reviewer.name} assigned as reviewer for proposal "${proposal.title}"`,
+    proposalId
+  );
+
+  return assignment;
 };

@@ -2,6 +2,7 @@ import { prisma } from '../config/db';
 import { CreateMilestoneInput, UpdateMilestoneInput } from '../schemas/milestone.schema';
 import { MilestoneStatus } from '@prisma/client';
 import { emitMilestoneUpdated } from '../socket/socket.events';
+import { createActivityLog } from './user.service';
 
 export const getMilestonesByProposal = async (proposalId: number) => {
   const proposal = await prisma.proposal.findUnique({
@@ -47,7 +48,8 @@ export const createMilestone = async (
 
 export const updateMilestoneStatus = async (
   milestoneId: number,
-  data: UpdateMilestoneInput
+  data: UpdateMilestoneInput,
+  actorId: number
 ) => {
   const milestone = await prisma.milestone.findUnique({
     where: { id: milestoneId },
@@ -65,6 +67,13 @@ export const updateMilestoneStatus = async (
   data.status
 );
 
+  await createActivityLog(
+    actorId,
+    'MILESTONE_STATUS_CHANGED',
+    `Milestone "${milestone.title}" status changed to ${data.status}`,
+    milestone.proposalId
+  );
+
   // if all milestones for this proposal are completed, mark proposal as FUNDED
   if (data.status === 'COMPLETED') {
     const allMilestones = await prisma.milestone.findMany({
@@ -74,10 +83,17 @@ export const updateMilestoneStatus = async (
     const allCompleted = allMilestones.every((m) => m.status === 'COMPLETED');
 
     if (allCompleted) {
-      await prisma.proposal.update({
+      const proposal = await prisma.proposal.update({
         where: { id: milestone.proposalId },
         data: { status: 'FUNDED' },
       });
+
+      await createActivityLog(
+        actorId,
+        'PROPOSAL_FUNDED',
+        `Proposal "${proposal.title}" fully funded — all milestones completed`,
+        proposal.id
+      );
     }
   }
 

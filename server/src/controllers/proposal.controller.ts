@@ -237,7 +237,8 @@ export const assignProposalReviewer = async (
 
     const assignment = await assignReviewer(
       proposalId,
-      reviewerId
+      reviewerId,
+      req.user!.userId
     );
 
     sendSuccess(

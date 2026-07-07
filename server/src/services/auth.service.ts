@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { prisma } from '../config/db';
 import { generateAccessToken, generateRefreshToken, parseDurationMs } from '../utils/jwt.utils';
-import { RegisterInput, LoginInput } from '../schemas/auth.schema';
+import { RegisterInput, LoginInput, UpdateProfileInput } from '../schemas/auth.schema';
 import { env } from '../config/env';
 
 export const registerUser = async (data: RegisterInput) => {
@@ -104,5 +104,23 @@ export const refreshAccessToken = async (refreshToken: string) => {
 export const logoutUser = async (refreshToken: string) => {
   await prisma.refreshToken.deleteMany({
     where: { token: refreshToken },
+  });
+};
+
+export const updateProfile = async (userId: number, data: UpdateProfileInput) => {
+  return prisma.user.update({
+    where: { id: userId },
+    data: {
+      name: data.name,
+      organization: data.organization,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      organization: true,
+      createdAt: true,
+    },
   });
 };

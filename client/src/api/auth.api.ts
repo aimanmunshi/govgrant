@@ -29,3 +29,11 @@ export const refreshApi = async () => {
   const response = await axiosInstance.post('/auth/refresh');
   return response.data;
 };
+
+export const updateProfileApi = async (data: {
+  name: string;
+  organization?: string;
+}): Promise<User> => {
+  const response = await axiosInstance.patch('/auth/me', data);
+  return response.data.data;
+};

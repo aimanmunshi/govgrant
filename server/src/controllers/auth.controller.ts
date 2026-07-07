@@ -4,6 +4,7 @@ import {
   loginUser,
   refreshAccessToken,
   logoutUser,
+  updateProfile,
 } from '../services/auth.service';
 import { sendSuccess, sendError } from '../utils/apiResponse';
 import {
@@ -74,5 +75,18 @@ export const logout = async (
     sendSuccess(res, null, 'Logged out successfully');
   } catch (error: any) {
     sendError(res, error.message, 500);
+  }
+};
+
+export const updateMe = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await updateProfile(req.user!.userId, req.body);
+    sendSuccess(res, user, 'Profile updated successfully');
+  } catch (error: any) {
+    sendError(res, error.message, 400);
   }
 };

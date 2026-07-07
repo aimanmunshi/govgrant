@@ -19,6 +19,7 @@ import ReviewsDashboard from "@/pages/Reviews/ReviewsDashboard";
 import UsersPage from "@/pages/Users/UsersPage";
 import ActivityPage from "@/pages/Activity/ActivityPage";
 import HelpPage from "@/pages/Help";
+import SettingsPage from "@/pages/Settings";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
@@ -144,6 +145,11 @@ const AppRouter = () => {
         <Route path="/help" element={
   <ProtectedRoute>
     <AppLayout><HelpPage /></AppLayout>
+  </ProtectedRoute>
+} />
+        <Route path="/settings" element={
+  <ProtectedRoute>
+    <AppLayout><SettingsPage /></AppLayout>
   </ProtectedRoute>
 } />
       </Routes>

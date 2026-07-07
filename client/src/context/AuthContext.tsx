@@ -15,6 +15,7 @@ interface AuthContextType {
     organization?: string;
     role?: string;
   }) => Promise<void>;
+  updateUser: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -66,9 +67,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await registerApi(data);
   };
 
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, accessToken, isLoading, login, logout, register }}
+      value={{ user, accessToken, isLoading, login, logout, register, updateUser }}
     >
       {children}
     </AuthContext.Provider>

@@ -16,6 +16,7 @@ import SubmitReview from '@/pages/Reviews/SubmitReview';
 import MilestoneTracker from '@/pages/Milestones/MilestoneTracker';
 import MilestoneDashboard from "@/pages/Milestones/MilestoneDashboard";
 import ReviewsDashboard from "@/pages/Reviews/ReviewsDashboard";
+import UsersPage from "@/pages/Users/UsersPage";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
@@ -34,6 +35,20 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
   if (isLoading) return null;
   if (user) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+};
+
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) return (
+    <div className="h-screen w-screen flex items-center justify-center bg-slate-950">
+      <div className="text-slate-400">Loading...</div>
+    </div>
+  );
+
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== 'ADMIN') return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 };
 
@@ -113,6 +128,11 @@ const AppRouter = () => {
   <ProtectedRoute>
     <AppLayout><ReviewsDashboard /></AppLayout>
   </ProtectedRoute>
+} />
+        <Route path="/users" element={
+  <AdminRoute>
+    <AppLayout><UsersPage /></AppLayout>
+  </AdminRoute>
 } />
       </Routes>
       

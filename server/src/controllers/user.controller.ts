@@ -63,7 +63,8 @@ export const changeUserRole = async (
 
     const user = await updateUserRole(
       userId,
-      req.body.role as Role
+      req.body.role as Role,
+      req.user!.userId
     );
 
     sendSuccess(

@@ -232,6 +232,10 @@ export const assignReviewer = async (
     throw new Error("Proposal not found");
   }
 
+  if (proposal.status === "DRAFT") {
+    throw new Error("Reviewers cannot be assigned to a draft proposal");
+  }
+
   const reviewer = await prisma.user.findUnique({
     where: {
       id: reviewerId,

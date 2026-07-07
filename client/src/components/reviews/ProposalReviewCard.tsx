@@ -4,7 +4,6 @@ import { getProposalByIdApi } from "@/api/proposal.api";
 import { Card, CardContent } from "@/components/ui/card";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import type { Proposal } from "@/types";
-import type { Review } from "@/types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -61,83 +60,54 @@ const ProposalReviewCard = ({ proposal }: ProposalReviewCardProps) => {
       <div className="mx-6 border-t border-dashed" />
 
       {/* Reviews section */}
-      {/* Reviews grouped by milestone */}
-<CardContent className="px-6 pt-4 pb-5">
-  {isLoading ? (
-    <div className="flex flex-col gap-3">
-      {[1, 2].map((i) => (
-        <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />
-      ))}
-    </div>
-  ) : (fullProposal?.milestones ?? []).length === 0 ? (
-    <p className="text-sm text-muted-foreground italic">
-      No milestones found.
-    </p>
-  ) : (
-    <div className="flex flex-col gap-4">
-      {(fullProposal?.milestones ?? []).map((milestone) => {
-        const milestoneReviews = (fullProposal?.reviews ?? []).filter(
-          (r) => r.milestoneId === milestone.id
-        );
-
-        return (
-          <div key={milestone.id} className="flex flex-col gap-2">
-            {/* Milestone header */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                {milestone.title}
-              </span>
-              <div className="flex-1 border-t border-dashed" />
-              <span className="text-xs text-muted-foreground shrink-0">
-                {milestoneReviews.length} review{milestoneReviews.length !== 1 ? "s" : ""}
-              </span>
-            </div>
-
-            {/* Reviews under this milestone */}
-            {milestoneReviews.length === 0 ? (
-              <p className="text-xs text-muted-foreground italic pl-1">
-                No review submitted yet.
-              </p>
-            ) : (
-              milestoneReviews.map((review) => (
-                <div
-                  key={review.id}
-                  className="rounded-lg border bg-muted/30 px-4 py-3"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div className="w-7 h-7 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
-                        <span className="text-xs font-semibold text-orange-700">
-                          {review.reviewer?.name?.[0]?.toUpperCase() ?? "R"}
-                        </span>
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium truncate">
-                          {review.reviewer?.name ?? "Reviewer"}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(review.createdAt).toLocaleDateString("en-IN", {
-                            day: "numeric", month: "short", year: "numeric",
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                    <ScoreBadge score={review.score} />
-                  </div>
-                  {review.comments && (
-                    <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                      {review.comments}
-                    </p>
-                  )}
-                </div>
-              ))
-            )}
+      <CardContent className="px-6 pt-4 pb-5">
+        {isLoading ? (
+          <div className="flex flex-col gap-3">
+            {[1, 2].map((i) => (
+              <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />
+            ))}
           </div>
-        );
-      })}
-    </div>
-  )}
-</CardContent>
+        ) : reviews.length === 0 ? (
+          <p className="text-sm text-muted-foreground italic">
+            No reviews submitted yet.
+          </p>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {reviews.map((review) => (
+              <div
+                key={review.id}
+                className="rounded-lg border bg-muted/30 px-4 py-3"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-7 h-7 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
+                      <span className="text-xs font-semibold text-orange-700">
+                        {review.reviewer?.name?.[0]?.toUpperCase() ?? "R"}
+                      </span>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {review.reviewer?.name ?? "Reviewer"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(review.createdAt).toLocaleDateString("en-IN", {
+                          day: "numeric", month: "short", year: "numeric",
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                  <ScoreBadge score={review.score} />
+                </div>
+                {review.comments && (
+                  <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                    {review.comments}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
     </Card>
   );
 };

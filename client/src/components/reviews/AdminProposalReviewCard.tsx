@@ -106,7 +106,9 @@ const AdminProposalReviewCard = ({ proposal }: AdminProposalReviewCardProps) => 
             <Button
               size="sm"
               variant="outline"
-              className="shrink-0 border-orange-300 text-orange-600 hover:bg-orange-50"
+              className="shrink-0 border-orange-300 text-orange-600 hover:bg-orange-50 disabled:opacity-50 disabled:hover:bg-transparent"
+              disabled={proposal.status === "DRAFT"}
+              title={proposal.status === "DRAFT" ? "Reviewers cannot be assigned to a draft proposal" : undefined}
               onClick={() => setModalOpen(true)}
             >
               Assign reviewer
@@ -153,48 +155,32 @@ const AdminProposalReviewCard = ({ proposal }: AdminProposalReviewCardProps) => 
         <div className="mx-6 border-t border-dashed mt-3" />
 
         {/* Reviews submitted */}
-        {/* Reviews grouped by milestone */}
-<CardContent className="px-6 pt-4 pb-5">
-  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
-    Reviews by milestone
-  </p>
-
-  {isLoading ? (
-    <div className="flex flex-col gap-2">
-      {[1, 2].map((i) => (
-        <div key={i} className="h-14 rounded-lg bg-muted animate-pulse" />
-      ))}
-    </div>
-  ) : (fullProposal?.milestones ?? []).length === 0 ? (
-    <p className="text-sm text-muted-foreground italic">
-      No milestones found.
-    </p>
-  ) : (
-    <div className="flex flex-col gap-4">
-      {(fullProposal?.milestones ?? []).map((milestone) => {
-        const milestoneReviews = reviews.filter(
-          (r) => r.milestoneId === milestone.id
-        );
-
-        return (
-          <div key={milestone.id} className="flex flex-col gap-2">
-            {/* Milestone header */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                {milestone.title}
+        <CardContent className="px-6 pt-4 pb-5">
+          <div className="flex items-center gap-2 mb-3">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Reviews submitted
+            </p>
+            {reviews.length > 0 && (
+              <span className="text-xs text-muted-foreground">
+                · avg{" "}
+                {(reviews.reduce((s, r) => s + r.score, 0) / reviews.length).toFixed(0)}/100
               </span>
-              <div className="flex-1 border-t border-dashed" />
-              <span className="text-xs text-muted-foreground shrink-0">
-                {milestoneReviews.length} review{milestoneReviews.length !== 1 ? "s" : ""}
-              </span>
+            )}
+          </div>
+
+          {isLoading ? (
+            <div className="flex flex-col gap-2">
+              {[1, 2].map((i) => (
+                <div key={i} className="h-14 rounded-lg bg-muted animate-pulse" />
+              ))}
             </div>
-
-            {milestoneReviews.length === 0 ? (
-              <p className="text-xs text-muted-foreground italic pl-1">
-                No review submitted yet.
-              </p>
-            ) : (
-              milestoneReviews.map((review) => (
+          ) : reviews.length === 0 ? (
+            <p className="text-sm text-muted-foreground italic">
+              No reviews submitted yet.
+            </p>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {reviews.map((review) => (
                 <div
                   key={review.id}
                   className="rounded-lg border bg-muted/30 px-4 py-3"
@@ -225,14 +211,10 @@ const AdminProposalReviewCard = ({ proposal }: AdminProposalReviewCardProps) => 
                     </p>
                   )}
                 </div>
-              ))
-            )}
-          </div>
-        );
-      })}
-    </div>
-  )}
-</CardContent>
+              ))}
+            </div>
+          )}
+        </CardContent>
       </Card>
 
       {/* Assign reviewer modal */}

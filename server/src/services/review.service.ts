@@ -17,43 +17,32 @@ export const submitReview = async (
   if (proposal.status !== 'UNDER_REVIEW')
     throw new Error('Reviews can only be submitted for proposals under review');
 
-  // Validate milestone belongs to this proposal
-  const milestone = await prisma.milestone.findUnique({
-    where: { id: data.milestoneId },
-  });
-
-  if (!milestone) throw new Error('Milestone not found');
-  if (milestone.proposalId !== proposalId)
-    throw new Error('Milestone does not belong to this proposal');
-
-  // Check unique per milestone per reviewer
+  // One evaluation review per reviewer per proposal
   const existingReview = await prisma.review.findUnique({
     where: {
-      milestoneId_reviewerId: { milestoneId: data.milestoneId, reviewerId },
+      proposalId_reviewerId: { proposalId, reviewerId },
     },
   });
 
   if (existingReview)
-    throw new Error('You have already reviewed this milestone');
+    throw new Error('You have already reviewed this proposal');
 
   const review = await prisma.review.create({
     data: {
-      score:       data.score,
-      comments:    data.comments,
+      score:    data.score,
+      comments: data.comments,
       proposalId,
       reviewerId,
-      milestoneId: data.milestoneId,
     },
     include: {
       reviewer: { select: { id: true, name: true, email: true } },
-      milestone: { select: { id: true, title: true } },
     },
   });
 
   await createActivityLog(
     reviewerId,
     'REVIEW_SUBMITTED',
-    `Review submitted for milestone "${milestone.title}" with score ${data.score}`,
+    `Review submitted for proposal "${proposal.title}" with score ${data.score}`,
     proposalId
   );
 

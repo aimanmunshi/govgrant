@@ -21,6 +21,10 @@ export interface User {
   role: Role;
   organization?: string;
   createdAt: string;
+  _count?: {
+    proposals: number;
+    reviews: number;
+  };
 }
 
 export interface Proposal {
@@ -83,11 +87,11 @@ export interface Review {
     name: string;
     email: string;
   };
-   milestoneId: number;        // ← add
-  milestone?: {               // ← add
+  milestoneId?: number | null;
+  milestone?: {
     id: number;
     title: string;
-  };
+  } | null;
 }
 
 export interface ActivityLog {

@@ -89,10 +89,10 @@ model Review {
   proposal    Proposal  @relation(fields: [proposalId], references: [id])
   reviewerId  Int
   reviewer    User      @relation(fields: [reviewerId], references: [id])
-  milestoneId Int
-  milestone   Milestone @relation(fields: [milestoneId], references: [id])
+  milestoneId Int?
+  milestone   Milestone? @relation(fields: [milestoneId], references: [id])
 
-  @@unique([milestoneId, reviewerId])
+  @@unique([proposalId, reviewerId])
 }
 
 model RefreshToken {

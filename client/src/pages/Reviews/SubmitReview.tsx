@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getProposalByIdApi } from '@/api/proposal.api'
@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/card'
 import { ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { TRLBadge } from '@/components/shared/TRLBadge'
-import type { Milestone } from '@/types'
+import { StatusBadge } from '@/components/shared/StatusBadge'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -24,95 +24,6 @@ const formatCurrency = (amount: number) => {
   if (amount >= 100_000)    return `₹${(amount / 100_000).toFixed(2)} L`
   return `₹${amount.toLocaleString()}`
 }
-
-const milestoneStatusColor: Record<string, string> = {
-  PENDING:     'bg-slate-500/10 text-slate-400 border-slate-500/20',
-  IN_PROGRESS: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  COMPLETED:   'bg-green-500/10 text-green-400 border-green-500/20',
-  OVERDUE:     'bg-red-500/10 text-red-400 border-red-500/20',
-}
-
-// ─── Milestone selector ───────────────────────────────────────────────────────
-
-interface MilestoneSelectorProps {
-  milestones: Milestone[]
-  reviewedMilestoneIds: Set<number>
-  selected: Milestone | null
-  onSelect: (m: Milestone) => void
-}
-
-const MilestoneSelector = ({
-  milestones,
-  reviewedMilestoneIds,
-  selected,
-  onSelect,
-}: MilestoneSelectorProps) => (
-  <div className="flex flex-col gap-2">
-    {milestones.map((milestone, index) => {
-      const alreadyReviewed = reviewedMilestoneIds.has(milestone.id)
-      const isSelected = selected?.id === milestone.id
-
-      return (
-        <button
-          key={milestone.id}
-          type="button"
-          disabled={alreadyReviewed}
-          onClick={() => onSelect(milestone)}
-          className={`
-            flex items-start gap-3 w-full rounded-lg border px-4 py-3 text-left
-            transition-all duration-150
-            ${alreadyReviewed
-              ? 'opacity-50 cursor-not-allowed bg-muted'
-              : isSelected
-                ? 'border-orange-400 bg-orange-500/5'
-                : 'hover:border-orange-300 hover:bg-muted/40'
-            }
-          `}
-        >
-          {/* Index */}
-          <div className="flex w-6 h-6 items-center justify-center rounded-full bg-orange-500/10 text-orange-400 text-xs font-bold shrink-0 mt-0.5">
-            {index + 1}
-          </div>
-
-          {/* Info */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-2 flex-wrap">
-              <p className="text-sm font-medium truncate">{milestone.title}</p>
-              <div className="flex items-center gap-2 shrink-0">
-                <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${milestoneStatusColor[milestone.status]}`}>
-                  {milestone.status.replace('_', ' ')}
-                </span>
-                {alreadyReviewed && (
-                  <span className="flex items-center gap-1 text-xs text-green-400 font-medium">
-                    <CheckCircle2 className="w-3 h-3" />
-                    Reviewed
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className="flex gap-4 mt-1">
-              <span className="text-xs text-muted-foreground">
-                Due {new Date(milestone.dueDate).toLocaleDateString('en-IN', {
-                  day: 'numeric', month: 'short', year: 'numeric',
-                })}
-              </span>
-              <span className="text-xs text-orange-400 font-medium">
-                {formatCurrency(milestone.fundRelease)}
-              </span>
-            </div>
-          </div>
-
-          {/* Selection indicator */}
-          {!alreadyReviewed && (
-            <span className={`w-4 h-4 rounded-full border shrink-0 mt-1 ${
-              isSelected ? 'bg-orange-500 border-orange-500' : 'border-muted-foreground/30'
-            }`} />
-          )}
-        </button>
-      )
-    })}
-  </div>
-)
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
@@ -123,7 +34,6 @@ const SubmitReview = () => {
   const queryClient = useQueryClient()
   const { user } = useAuth()
 
-  const [selectedMilestone, setSelectedMilestone] = useState<Milestone | null>(null)
   const [score, setScore] = useState(70)
   const [comments, setComments] = useState('')
   const [error, setError] = useState('')
@@ -138,31 +48,25 @@ const SubmitReview = () => {
     queryFn: () => getReviewsApi(proposalId),
   })
 
-  // Milestones this reviewer has already reviewed
-  const reviewedMilestoneIds = new Set(
-    reviewData?.reviews
-      .filter((r: any) => r.reviewerId === user?.id)
-      .map((r: any) => r.milestoneId) ?? []
-  )
+  // Has this reviewer already reviewed this proposal?
+  const myReview = reviewData?.reviews.find((r) => r.reviewerId === user?.id)
+  const hasReviewed = !!myReview
 
-  const milestones = proposal?.milestones ?? []
-  const allReviewed = milestones.length > 0 &&
-    milestones.every((m) => reviewedMilestoneIds.has(m.id))
+  // Prefill the form when an existing review is loaded
+  useEffect(() => {
+    if (myReview) {
+      setScore(myReview.score)
+      setComments(myReview.comments)
+    }
+  }, [myReview])
+
+  const canReview = proposal?.status === 'UNDER_REVIEW'
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () =>
-      submitReviewApi(proposalId, {
-        milestoneId: selectedMilestone!.id,
-        score,
-        comments,
-      }),
+    mutationFn: () => submitReviewApi(proposalId, { score, comments }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reviews', proposalId] })
       queryClient.invalidateQueries({ queryKey: ['proposal', proposalId] })
-      // Reset form for next milestone
-      setSelectedMilestone(null)
-      setScore(70)
-      setComments('')
       setError('')
     },
     onError: (err: any) => {
@@ -173,10 +77,6 @@ const SubmitReview = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (!selectedMilestone) {
-      setError('Please select a milestone to review')
-      return
-    }
     if (comments.trim().length < 10) {
       setError('Comments must be at least 10 characters')
       return
@@ -199,7 +99,7 @@ const SubmitReview = () => {
         <div>
           <h1 className="text-2xl font-bold">Submit Review</h1>
           <p className="text-muted-foreground text-sm">
-            Select a milestone and submit your evaluation
+            Evaluate this proposal on technical merit, feasibility, and impact
           </p>
         </div>
       </div>
@@ -211,8 +111,9 @@ const SubmitReview = () => {
             <div className="flex items-center gap-2 flex-wrap mb-2">
               <p className="font-medium text-sm">{proposal.title}</p>
               <TRLBadge level={proposal.trlLevel} />
+              <StatusBadge status={proposal.status} />
             </div>
-            <p className="text-xs text-muted-foreground line-clamp-2">
+            <p className="text-xs text-muted-foreground line-clamp-3">
               {proposal.description}
             </p>
             <p className="text-xs text-orange-400 font-medium mt-2">
@@ -222,60 +123,35 @@ const SubmitReview = () => {
         </Card>
       )}
 
-      {/* Review progress */}
-      {milestones.length > 0 && (
-        <Card>
-          <CardContent className="py-3 flex items-center justify-between">
-            <p className="text-xs text-muted-foreground">
-              {reviewedMilestoneIds.size} of {milestones.length} milestone{milestones.length !== 1 ? 's' : ''} reviewed
-            </p>
-            {allReviewed && (
-              <span className="flex items-center gap-1 text-xs text-green-400 font-medium">
-                <CheckCircle2 className="w-3 h-3" />
-                All milestones reviewed
-              </span>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* No milestones state */}
-      {milestones.length === 0 && (
+      {/* Not under review — reviews are locked */}
+      {proposal && !canReview && !hasReviewed && (
         <Card>
           <CardContent className="py-8 text-center text-muted-foreground text-sm">
-            No milestones found for this proposal.
+            This proposal is not open for review.
             <br />
-            Milestones must be added before reviews can be submitted.
+            Reviews can only be submitted while a proposal is under review.
           </CardContent>
         </Card>
       )}
 
-      {/* Milestone selector */}
-      {milestones.length > 0 && (
+      {/* Already reviewed */}
+      {hasReviewed && (
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Select Milestone</CardTitle>
-            <CardDescription>
-              Choose which milestone you are reviewing
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <MilestoneSelector
-              milestones={milestones}
-              reviewedMilestoneIds={reviewedMilestoneIds}
-              selected={selectedMilestone}
-              onSelect={setSelectedMilestone}
-            />
+          <CardContent className="py-3 flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-green-400" />
+            <span className="text-sm text-green-400 font-medium">
+              You submitted a review with a score of {myReview!.score}/100.
+            </span>
           </CardContent>
         </Card>
       )}
 
-      {/* Review form — only shown when a milestone is selected */}
-      {selectedMilestone && (
+      {/* Review form */}
+      {(canReview || hasReviewed) && (
         <Card>
           <CardHeader>
             <CardTitle className="text-base">
-              Reviewing: {selectedMilestone.title}
+              {hasReviewed ? 'Your Review' : 'Your Evaluation'}
             </CardTitle>
             <CardDescription>
               Score from 0–100 based on technical merit, feasibility, and impact
@@ -303,7 +179,8 @@ const SubmitReview = () => {
                   max={100}
                   value={score}
                   onChange={(e) => setScore(Number(e.target.value))}
-                  className="w-full accent-orange-500"
+                  disabled={hasReviewed}
+                  className="w-full accent-orange-500 disabled:opacity-50"
                 />
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>Poor</span>
@@ -320,32 +197,37 @@ const SubmitReview = () => {
                   value={comments}
                   onChange={(e) => setComments(e.target.value)}
                   required
+                  disabled={hasReviewed}
                   rows={5}
-                  className="w-full rounded-md bg-input border border-border text-foreground px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring resize-none"
+                  className="w-full rounded-md bg-input border border-border text-foreground px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring resize-none disabled:opacity-50"
                 />
-                <p className={`text-xs ${comments.length < 10 ? 'text-red-400' : 'text-green-400'}`}>
-                  {comments.length}/10 minimum characters
-                </p>
+                {!hasReviewed && (
+                  <p className={`text-xs ${comments.length < 10 ? 'text-red-400' : 'text-green-400'}`}>
+                    {comments.length}/10 minimum characters
+                  </p>
+                )}
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 pt-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate(`/proposals/${proposalId}`)}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isPending}
-                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
-                >
-                  {isPending ? 'Submitting...' : 'Submit Review'}
-                </Button>
-              </div>
+              {!hasReviewed && (
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => navigate(`/proposals/${proposalId}`)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isPending}
+                    className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+                  >
+                    {isPending ? 'Submitting...' : 'Submit Review'}
+                  </Button>
+                </div>
+              )}
             </form>
           </CardContent>
         </Card>

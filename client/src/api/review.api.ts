@@ -3,7 +3,7 @@ import { Review } from '../types';
 
 export const submitReviewApi = async (
   proposalId: number,
-  data: { score: number; comments: string; milestoneId: number }
+  data: { score: number; comments: string }
 ) => {
   const response = await axiosInstance.post(
     `/proposals/${proposalId}/reviews`,

@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt';
 import { prisma } from '../config/db';
-import { generateAccessToken, generateRefreshToken } from '../utils/jwt.utils';
+import { generateAccessToken, generateRefreshToken, parseDurationMs } from '../utils/jwt.utils';
 import { RegisterInput, LoginInput } from '../schemas/auth.schema';
+import { env } from '../config/env';
 
 export const registerUser = async (data: RegisterInput) => {
   // check if user already exists
@@ -64,7 +65,7 @@ export const loginUser = async (data: LoginInput) => {
     data: {
       token: refreshToken,
       userId: user.id,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      expiresAt: new Date(Date.now() + parseDurationMs(env.REFRESH_TOKEN_EXPIRY)),
     },
   });
 

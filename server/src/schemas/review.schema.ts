@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 export const createReviewSchema = z.object({
-  milestoneId: z.number().int().positive('Milestone ID is required'),
   score: z
     .number()
     .int()

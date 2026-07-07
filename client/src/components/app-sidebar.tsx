@@ -7,7 +7,6 @@ import {
   Activity,
   Settings,
   HelpCircle,
-  Search,
 } from "lucide-react"
 import {
   Sidebar,
@@ -40,7 +39,6 @@ const navAdmin = [
 const navSecondary = [
   { title: "Settings", url: "/settings", icon: Settings },
   { title: "Get Help", url: "/help", icon: HelpCircle },
-  { title: "Search", url: "/search", icon: Search },
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

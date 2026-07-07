@@ -18,6 +18,7 @@ import MilestoneDashboard from "@/pages/Milestones/MilestoneDashboard";
 import ReviewsDashboard from "@/pages/Reviews/ReviewsDashboard";
 import UsersPage from "@/pages/Users/UsersPage";
 import ActivityPage from "@/pages/Activity/ActivityPage";
+import HelpPage from "@/pages/Help";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
@@ -139,6 +140,11 @@ const AppRouter = () => {
   <AdminRoute>
     <AppLayout><ActivityPage /></AppLayout>
   </AdminRoute>
+} />
+        <Route path="/help" element={
+  <ProtectedRoute>
+    <AppLayout><HelpPage /></AppLayout>
+  </ProtectedRoute>
 } />
       </Routes>
       

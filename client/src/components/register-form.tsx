@@ -70,7 +70,7 @@ export function RegisterForm({
                 <Input
                   id="name"
                   name="name"
-                  placeholder="Aiman Munshi"
+                  placeholder="Full name"
                   required
                   value={form.name}
                   onChange={handleChange}
@@ -82,7 +82,7 @@ export function RegisterForm({
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="you@organization.com"
                   required
                   value={form.email}
                   onChange={handleChange}
@@ -104,7 +104,6 @@ export function RegisterForm({
                 <Input
                   id="organization"
                   name="organization"
-                  placeholder="C-DOT, IIT Delhi, etc."
                   value={form.organization}
                   onChange={handleChange}
                 />

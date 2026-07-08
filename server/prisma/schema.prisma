@@ -14,6 +14,7 @@ model User {
   password      String
   role          Role           @default(APPLICANT)
   organization  String?
+  emailVerified Boolean        @default(true)
   createdAt     DateTime       @default(now())
 
   proposals     Proposal[]     @relation("ApplicantProposals")
@@ -22,6 +23,27 @@ model User {
   activities    ActivityLog[]
   assignments   ProposalAssignment[] @relation("AssignedReviews")
   notifications Notification[]
+  verificationTokens EmailVerificationToken[]
+  passwordResetTokens PasswordResetToken[]
+}
+
+model EmailVerificationToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
 }
 
 enum Role {

@@ -5,6 +5,10 @@ import {
   refreshAccessToken,
   logoutUser,
   updateProfile,
+  verifyEmail,
+  resendVerificationEmail,
+  forgotPassword,
+  resetPassword,
 } from '../services/auth.service';
 import { sendSuccess, sendError } from '../utils/apiResponse';
 import {
@@ -86,6 +90,55 @@ export const updateMe = async (
   try {
     const user = await updateProfile(req.user!.userId, req.body);
     sendSuccess(res, user, 'Profile updated successfully');
+  } catch (error: any) {
+    sendError(res, error.message, 400);
+  }
+};
+
+export const verifyEmailHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    await verifyEmail(req.body.token);
+    sendSuccess(res, null, 'Email verified successfully');
+  } catch (error: any) {
+    sendError(res, error.message, 400);
+  }
+};
+
+export const resendVerification = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    await resendVerificationEmail(req.user!.userId);
+    sendSuccess(res, null, 'Verification email sent');
+  } catch (error: any) {
+    sendError(res, error.message, 400);
+  }
+};
+
+export const forgotPasswordHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    await forgotPassword(req.body.email);
+    // always respond success — don't reveal whether the email exists
+    sendSuccess(res, null, 'If that email is registered, a reset link has been sent');
+  } catch (error: any) {
+    sendError(res, error.message, 500);
+  }
+};
+
+export const resetPasswordHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    await resetPassword(req.body.token, req.body.password);
+    sendSuccess(res, null, 'Password reset successfully');
   } catch (error: any) {
     sendError(res, error.message, 400);
   }

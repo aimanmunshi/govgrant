@@ -13,7 +13,6 @@ interface AuthContextType {
     email: string;
     password: string;
     organization?: string;
-    role?: string;
   }) => Promise<void>;
   updateUser: (user: User) => void;
 }
@@ -62,7 +61,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     email: string;
     password: string;
     organization?: string;
-    role?: string;
   }) => {
     await registerApi(data);
   };

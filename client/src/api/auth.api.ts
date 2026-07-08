@@ -6,7 +6,6 @@ export const registerApi = async (data: {
   email: string;
   password: string;
   organization?: string;
-  role?: string;
 }) => {
   const response = await axiosInstance.post('/auth/register', data);
   return response.data;
@@ -36,4 +35,24 @@ export const updateProfileApi = async (data: {
 }): Promise<User> => {
   const response = await axiosInstance.patch('/auth/me', data);
   return response.data.data;
+};
+
+export const verifyEmailApi = async (token: string) => {
+  const response = await axiosInstance.post('/auth/verify-email', { token });
+  return response.data;
+};
+
+export const resendVerificationApi = async () => {
+  const response = await axiosInstance.post('/auth/resend-verification');
+  return response.data;
+};
+
+export const forgotPasswordApi = async (email: string) => {
+  const response = await axiosInstance.post('/auth/forgot-password', { email });
+  return response.data;
+};
+
+export const resetPasswordApi = async (token: string, password: string) => {
+  const response = await axiosInstance.post('/auth/reset-password', { token, password });
+  return response.data;
 };

@@ -21,7 +21,6 @@ export function RegisterForm({
     email: '',
     password: '',
     organization: '',
-    role: 'APPLICANT',
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -95,9 +94,13 @@ export function RegisterForm({
                   name="password"
                   type="password"
                   required
+                  minLength={10}
                   value={form.password}
                   onChange={handleChange}
                 />
+                <p className="text-xs text-muted-foreground">
+                  At least 10 characters, including a letter and a number
+                </p>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="organization">Organization</Label>
@@ -107,20 +110,6 @@ export function RegisterForm({
                   value={form.organization}
                   onChange={handleChange}
                 />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="role">Role</Label>
-                <select
-                  id="role"
-                  name="role"
-                  value={form.role}
-                  onChange={handleChange}
-                  className="w-full rounded-md bg-input border border-border text-foreground px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                >
-                  <option value="APPLICANT">Applicant</option>
-                  <option value="REVIEWER">Reviewer</option>
-                  <option value="ADMIN">Admin</option>
-                </select>
               </div>
               <Button type="submit" className="w-full mt-2" disabled={isLoading}>
                 {isLoading ? 'Creating account...' : 'Create account'}

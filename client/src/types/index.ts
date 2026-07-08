@@ -20,6 +20,7 @@ export interface User {
   email: string;
   role: Role;
   organization?: string;
+  emailVerified: boolean;
   createdAt: string;
   _count?: {
     proposals: number;

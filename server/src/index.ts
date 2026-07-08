@@ -8,6 +8,7 @@ import { Server } from 'socket.io';
 import dotenv from 'dotenv';
 import { execSync } from 'child_process';
 import { errorHandler } from './middleware/error.middleware';
+import { apiLimiter } from './middleware/rateLimit.middleware';
 import { initializeSocket } from './socket/socket.handler';
 import authRoutes from './routes/auth.routes';
 import proposalRoutes from './routes/proposal.routes';
@@ -49,6 +50,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
+app.use('/api', apiLimiter);
 
 app.get('/', (req, res) => {
   res.json({ success: true, message: 'GovGrant API is running 🚀' });

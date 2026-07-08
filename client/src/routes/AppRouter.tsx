@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
+import { VerifyEmailBanner } from '@/components/VerifyEmailBanner';
 import ProposalDetail from '../pages/Proposals/ProposalDetail'
 import SubmitReview from '@/pages/Reviews/SubmitReview';
 import MilestoneTracker from '@/pages/Milestones/MilestoneTracker';
@@ -22,6 +23,9 @@ import HelpPage from "@/pages/Help";
 import SettingsPage from "@/pages/Settings";
 import NotificationsPage from "@/pages/Notifications/NotificationsPage";
 import AccountPage from "@/pages/Account";
+import ForgotPasswordPage from "@/pages/ForgotPassword";
+import ResetPasswordPage from "@/pages/ResetPassword";
+import VerifyEmailPage from "@/pages/VerifyEmail";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
@@ -69,6 +73,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       <AppSidebar variant="inset" />
       <SidebarInset>
         <SiteHeader />
+        <VerifyEmailBanner />
         <div className="flex flex-1 flex-col overflow-auto">
           {children}
         </div>
@@ -83,6 +88,9 @@ const AppRouter = () => {
       <Routes>
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+        <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
+        <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <AppLayout><Dashboard /></AppLayout>

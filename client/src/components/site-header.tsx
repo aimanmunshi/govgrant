@@ -2,6 +2,7 @@ import { useAuth } from "@/context/AuthContext"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
+import { NotificationBell } from "@/components/NotificationBell"
 
 const roleBadgeColor: Record<string, string> = {
   ADMIN: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
@@ -29,6 +30,7 @@ export function SiteHeader() {
               {user.role}
             </span>
           )}
+          <NotificationBell />
         </div>
       </div>
     </header>

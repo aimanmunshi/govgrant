@@ -113,6 +113,23 @@ export interface ActivityLog {
   };
 }
 
+export type NotificationType =
+  | 'PROPOSAL_STATUS_CHANGED'
+  | 'REVIEW_SUBMITTED'
+  | 'MILESTONE_STATUS_CHANGED'
+  | 'REVIEWER_ASSIGNED';
+
+export interface Notification {
+  id: number;
+  type: NotificationType;
+  title: string;
+  message: string;
+  link?: string | null;
+  isRead: boolean;
+  createdAt: string;
+  userId: number;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   message: string;

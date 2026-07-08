@@ -20,6 +20,8 @@ import UsersPage from "@/pages/Users/UsersPage";
 import ActivityPage from "@/pages/Activity/ActivityPage";
 import HelpPage from "@/pages/Help";
 import SettingsPage from "@/pages/Settings";
+import NotificationsPage from "@/pages/Notifications/NotificationsPage";
+import AccountPage from "@/pages/Account";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
@@ -150,6 +152,16 @@ const AppRouter = () => {
         <Route path="/settings" element={
   <ProtectedRoute>
     <AppLayout><SettingsPage /></AppLayout>
+  </ProtectedRoute>
+} />
+        <Route path="/notifications" element={
+  <ProtectedRoute>
+    <AppLayout><NotificationsPage /></AppLayout>
+  </ProtectedRoute>
+} />
+        <Route path="/account" element={
+  <ProtectedRoute>
+    <AppLayout><AccountPage /></AppLayout>
   </ProtectedRoute>
 } />
       </Routes>

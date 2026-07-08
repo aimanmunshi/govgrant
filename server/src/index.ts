@@ -15,6 +15,7 @@ import milestoneRoutes from './routes/milestone.routes';
 import reviewRoutes from './routes/review.routes';
 import userRoutes from './routes/user.routes';
 import activityRoutes from './routes/activity.routes';
+import notificationRoutes from './routes/notification.routes';
 
 dotenv.config();
 
@@ -59,6 +60,7 @@ app.use('/api', milestoneRoutes);
 app.use('/api', reviewRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/activity', activityRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.use(errorHandler);
 

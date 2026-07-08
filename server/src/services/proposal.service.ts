@@ -2,6 +2,7 @@ import { prisma } from '../config/db';
 import { CreateProposalInput, UpdateProposalInput } from '../schemas/proposal.schema';
 import { ProposalStatus } from '@prisma/client';
 import { createActivityLog } from './user.service';
+import { createNotification } from './notification.service';
 import {
   emitProposalStatusChanged,
 } from '../socket/socket.events';
@@ -191,6 +192,14 @@ export const updateProposalStatus = async (
     proposal.applicantId
   );
 
+  await createNotification(
+    proposal.applicantId,
+    'PROPOSAL_STATUS_CHANGED',
+    'Proposal status updated',
+    `Your proposal "${proposal.title}" is now ${status}`,
+    `/proposals/${id}`
+  );
+
   return updated;
 };
 
@@ -253,6 +262,14 @@ export const assignReviewer = async (
     'REVIEWER_ASSIGNED',
     `${reviewer.name} assigned as reviewer for proposal "${proposal.title}"`,
     proposalId
+  );
+
+  await createNotification(
+    reviewerId,
+    'REVIEWER_ASSIGNED',
+    'New review assignment',
+    `You've been assigned to review "${proposal.title}"`,
+    `/proposals/${proposalId}/review`
   );
 
   return assignment;

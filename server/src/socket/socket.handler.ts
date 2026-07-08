@@ -27,6 +27,9 @@ export const initializeSocket = (io: Server) => {
     socket.join(`role:${user.role}`);
     console.log(`User ${user.userId} joined room: role:${user.role}`);
 
+    // join a personal room for per-user notifications
+    socket.join(`user:${user.userId}`);
+
     // join a specific proposal room
     socket.on('join:proposal', (proposalId: number) => {
       socket.join(`proposal:${proposalId}`);

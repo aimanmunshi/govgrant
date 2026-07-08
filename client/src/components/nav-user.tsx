@@ -18,8 +18,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { EllipsisVerticalIcon, CircleUserRoundIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
+import { EllipsisVerticalIcon, CircleUserRoundIcon, BellIcon, LogOutIcon } from "lucide-react"
 import { useAuth } from "@/context/AuthContext"
+import { useNotifications } from "@/context/NotificationContext"
+import { useNavigate } from "react-router-dom"
 
 export function NavUser({
   user,
@@ -32,6 +34,8 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
   const { logout } = useAuth()
+  const { unreadCount } = useNotifications()
+  const navigate = useNavigate()
 
   return (
     <SidebarMenu>
@@ -81,20 +85,16 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <CircleUserRoundIcon
-                />
+              <DropdownMenuItem onClick={() => navigate("/account")}>
+                <CircleUserRoundIcon />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCardIcon
-                />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <BellIcon
-                />
+              <DropdownMenuItem onClick={() => navigate("/notifications")}>
+                <BellIcon />
                 Notifications
+                {unreadCount > 0 && (
+                  <span className="ml-auto text-xs text-orange-400">{unreadCount}</span>
+                )}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

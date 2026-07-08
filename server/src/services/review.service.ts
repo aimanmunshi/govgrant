@@ -1,6 +1,7 @@
 import { prisma } from '../config/db';
 import { CreateReviewInput } from '../schemas/review.schema';
 import { createActivityLog } from './user.service';
+import { createNotification } from './notification.service';
 import { emitReviewSubmitted } from '../socket/socket.events';
 
 export const submitReview = async (
@@ -47,6 +48,14 @@ export const submitReview = async (
   );
 
   emitReviewSubmitted(proposalId, proposal.title, review.reviewer.name, data.score);
+
+  await createNotification(
+    proposal.applicantId,
+    'REVIEW_SUBMITTED',
+    'New review received',
+    `${review.reviewer.name} reviewed your proposal "${proposal.title}" with a score of ${data.score}`,
+    `/proposals/${proposalId}`
+  );
 
   return review;
 };

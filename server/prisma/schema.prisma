@@ -21,6 +21,7 @@ model User {
   refreshTokens RefreshToken[]
   activities    ActivityLog[]
   assignments   ProposalAssignment[] @relation("AssignedReviews")
+  notifications Notification[]
 }
 
 enum Role {
@@ -115,6 +116,28 @@ model ActivityLog {
   proposalId  Int?
   proposal    Proposal? @relation(fields: [proposalId], references: [id])
 }
+model Notification {
+  id        Int              @id @default(autoincrement())
+  type      NotificationType
+  title     String
+  message   String
+  link      String?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  userId    Int
+  user      User             @relation(fields: [userId], references: [id])
+
+  @@index([userId, isRead])
+}
+
+enum NotificationType {
+  PROPOSAL_STATUS_CHANGED
+  REVIEW_SUBMITTED
+  MILESTONE_STATUS_CHANGED
+  REVIEWER_ASSIGNED
+}
+
 model ProposalAssignment {
   id         Int      @id @default(autoincrement())
   assignedAt DateTime @default(now())

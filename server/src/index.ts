@@ -50,7 +50,7 @@ initializeSocket(io);
 app.use(helmet());
 app.use(morgan('dev'));
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: env.CLIENT_URL,
   credentials: true,
 }));
 app.use(express.json());

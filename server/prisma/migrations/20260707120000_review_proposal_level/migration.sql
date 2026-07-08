@@ -1,13 +1,13 @@
 -- DropForeignKey
-ALTER TABLE `review` DROP FOREIGN KEY `Review_milestoneId_fkey`;
+ALTER TABLE `Review` DROP FOREIGN KEY `Review_milestoneId_fkey`;
 -- DropForeignKey
-ALTER TABLE `review` DROP FOREIGN KEY `Review_proposalId_fkey`;
+ALTER TABLE `Review` DROP FOREIGN KEY `Review_proposalId_fkey`;
 -- DropForeignKey
-ALTER TABLE `review` DROP FOREIGN KEY `Review_reviewerId_fkey`;
+ALTER TABLE `Review` DROP FOREIGN KEY `Review_reviewerId_fkey`;
 -- DropIndex
-DROP INDEX `Review_milestoneId_reviewerId_key` ON `review`;
+DROP INDEX `Review_milestoneId_reviewerId_key` ON `Review`;
 -- AlterTable
-ALTER TABLE `review` MODIFY `milestoneId` INTEGER NULL;
+ALTER TABLE `Review` MODIFY `milestoneId` INTEGER NULL;
 -- CreateIndex
 CREATE UNIQUE INDEX `Review_proposalId_reviewerId_key` ON `Review`(`proposalId`, `reviewerId`);
 -- AddForeignKey

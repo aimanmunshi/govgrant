@@ -6,13 +6,13 @@
 
 */
 -- CreateIndex (supports the existing proposalId FK once the composite unique index below is dropped)
-CREATE INDEX `Review_proposalId_idx` ON `review`(`proposalId`);
+CREATE INDEX `Review_proposalId_idx` ON `Review`(`proposalId`);
 
 -- DropIndex
-DROP INDEX `Review_proposalId_reviewerId_key` ON `review`;
+DROP INDEX `Review_proposalId_reviewerId_key` ON `Review`;
 
 -- AlterTable
-ALTER TABLE `review` ADD COLUMN `milestoneId` INTEGER NOT NULL;
+ALTER TABLE `Review` ADD COLUMN `milestoneId` INTEGER NOT NULL;
 
 -- CreateIndex
 CREATE UNIQUE INDEX `Review_milestoneId_reviewerId_key` ON `Review`(`milestoneId`, `reviewerId`);

@@ -31,6 +31,10 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const app = express();
+// Railway (and most PaaS hosts) sit behind a reverse proxy, so Express needs to
+// trust the X-Forwarded-For header to determine real client IPs — required for
+// express-rate-limit to work correctly rather than bucketing all requests together
+app.set('trust proxy', 1);
 const httpServer = createServer(app);
 
 export const io = new Server(httpServer, {

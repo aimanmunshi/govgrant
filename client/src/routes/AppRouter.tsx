@@ -49,9 +49,8 @@ const AnimatedOutlet = () => {
       <motion.div
         key={location.pathname}
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.12, ease: 'easeOut' }}
+        animate={{ opacity: 1, transition: { duration: 0.22, ease: 'easeOut' } }}
+        exit={{ opacity: 0, transition: { duration: 0.12, ease: 'easeIn' } }}
         className="flex flex-1 flex-col"
       >
         <Outlet />

@@ -58,7 +58,7 @@ const AccountPage = () => {
   }
 
   const { data, isLoading } = useQuery({
-    queryKey: ['proposals', 'account', user?.role],
+    queryKey: ['proposals', { limit: 100 }],
     queryFn: () => getProposalsApi({ limit: 100 }),
     enabled: user?.role === 'APPLICANT' || user?.role === 'REVIEWER',
   })

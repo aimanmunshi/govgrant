@@ -1,11 +1,7 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
-import Login from '../pages/Login';
-import Register from '../pages/Register';
-import Dashboard from '../pages/Dashboard';
-import ProposalList from '../pages/Proposals/ProposalList';
-import SubmitProposal from '../pages/Proposals/SubmitProposal';
 import {
   SidebarInset,
   SidebarProvider,
@@ -13,20 +9,32 @@ import {
 import { AppSidebar } from '@/components/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { VerifyEmailBanner } from '@/components/VerifyEmailBanner';
-import ProposalDetail from '../pages/Proposals/ProposalDetail'
-import SubmitReview from '@/pages/Reviews/SubmitReview';
-import MilestoneTracker from '@/pages/Milestones/MilestoneTracker';
-import MilestoneDashboard from "@/pages/Milestones/MilestoneDashboard";
-import ReviewsDashboard from "@/pages/Reviews/ReviewsDashboard";
-import UsersPage from "@/pages/Users/UsersPage";
-import ActivityPage from "@/pages/Activity/ActivityPage";
-import HelpPage from "@/pages/Help";
-import SettingsPage from "@/pages/Settings";
-import NotificationsPage from "@/pages/Notifications/NotificationsPage";
-import AccountPage from "@/pages/Account";
-import ForgotPasswordPage from "@/pages/ForgotPassword";
-import ResetPasswordPage from "@/pages/ResetPassword";
-import VerifyEmailPage from "@/pages/VerifyEmail";
+
+const Login = lazy(() => import('../pages/Login'));
+const Register = lazy(() => import('../pages/Register'));
+const Dashboard = lazy(() => import('../pages/Dashboard'));
+const ProposalList = lazy(() => import('../pages/Proposals/ProposalList'));
+const SubmitProposal = lazy(() => import('../pages/Proposals/SubmitProposal'));
+const ProposalDetail = lazy(() => import('../pages/Proposals/ProposalDetail'));
+const SubmitReview = lazy(() => import('@/pages/Reviews/SubmitReview'));
+const MilestoneTracker = lazy(() => import('@/pages/Milestones/MilestoneTracker'));
+const MilestoneDashboard = lazy(() => import('@/pages/Milestones/MilestoneDashboard'));
+const ReviewsDashboard = lazy(() => import('@/pages/Reviews/ReviewsDashboard'));
+const UsersPage = lazy(() => import('@/pages/Users/UsersPage'));
+const ActivityPage = lazy(() => import('@/pages/Activity/ActivityPage'));
+const HelpPage = lazy(() => import('@/pages/Help'));
+const SettingsPage = lazy(() => import('@/pages/Settings'));
+const NotificationsPage = lazy(() => import('@/pages/Notifications/NotificationsPage'));
+const AccountPage = lazy(() => import('@/pages/Account'));
+const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPassword'));
+const ResetPasswordPage = lazy(() => import('@/pages/ResetPassword'));
+const VerifyEmailPage = lazy(() => import('@/pages/VerifyEmail'));
+
+const PageFallback = () => (
+  <div className="flex flex-1 items-center justify-center p-12">
+    <div className="text-muted-foreground text-sm">Loading...</div>
+  </div>
+);
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
@@ -84,7 +92,9 @@ const ProtectedLayout = () => {
         <SiteHeader />
         <VerifyEmailBanner />
         <div className="relative flex flex-1 flex-col overflow-auto">
-          <AnimatedOutlet />
+          <Suspense fallback={<PageFallback />}>
+            <AnimatedOutlet />
+          </Suspense>
         </div>
       </SidebarInset>
     </SidebarProvider>
@@ -94,32 +104,34 @@ const ProtectedLayout = () => {
 const AppRouter = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-        <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-        <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
-        <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
-        <Route path="/verify-email" element={<VerifyEmailPage />} />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Suspense fallback={<PageFallback />}>
+        <Routes>
+          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+          <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
+          <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-        <Route element={<ProtectedLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/proposals" element={<ProposalList />} />
-          <Route path="/proposals/new" element={<SubmitProposal />} />
-          <Route path="/proposals/:id" element={<ProposalDetail />} />
-          <Route path="/proposals/:id/milestones" element={<MilestoneTracker />} />
-          <Route path="/proposals/:id/review" element={<SubmitReview />} />
-          <Route path="/proposals/:id/edit" element={<SubmitProposal />} />
-          <Route path="/milestones" element={<MilestoneDashboard />} />
-          <Route path="/reviews" element={<ReviewsDashboard />} />
-          <Route path="/help" element={<HelpPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/account" element={<AccountPage />} />
-          <Route path="/users" element={<AdminGuard><UsersPage /></AdminGuard>} />
-          <Route path="/activity" element={<AdminGuard><ActivityPage /></AdminGuard>} />
-        </Route>
-      </Routes>
+          <Route element={<ProtectedLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/proposals" element={<ProposalList />} />
+            <Route path="/proposals/new" element={<SubmitProposal />} />
+            <Route path="/proposals/:id" element={<ProposalDetail />} />
+            <Route path="/proposals/:id/milestones" element={<MilestoneTracker />} />
+            <Route path="/proposals/:id/review" element={<SubmitReview />} />
+            <Route path="/proposals/:id/edit" element={<SubmitProposal />} />
+            <Route path="/milestones" element={<MilestoneDashboard />} />
+            <Route path="/reviews" element={<ReviewsDashboard />} />
+            <Route path="/help" element={<HelpPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/account" element={<AccountPage />} />
+            <Route path="/users" element={<AdminGuard><UsersPage /></AdminGuard>} />
+            <Route path="/activity" element={<AdminGuard><ActivityPage /></AdminGuard>} />
+          </Route>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 };

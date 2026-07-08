@@ -6,17 +6,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import axiosInstance from '@/api/axiosInstance'
-import { Proposal } from '@/types'
-import { PaginatedResponse } from '@/types'
+import { getProposalsApi } from '@/api/proposal.api'
 
 export function SectionCards() {
   const { data, isLoading } = useQuery({
-    queryKey: ['proposals', 'stats'],
-    queryFn: async () => {
-      const response = await axiosInstance.get('/proposals?limit=100')
-      return response.data.data as PaginatedResponse<Proposal>
-    },
+    queryKey: ['proposals', { limit: 100 }],
+    queryFn: () => getProposalsApi({ limit: 100 }),
   })
 
   const proposals = data?.proposals ?? []

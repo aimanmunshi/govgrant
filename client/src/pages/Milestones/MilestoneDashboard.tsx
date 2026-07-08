@@ -12,7 +12,7 @@ const MilestoneDashboard = () => {
   const { user } = useAuth();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["proposals"],
+    queryKey: ["proposals", { limit: 100 }],
     queryFn: () => getProposalsApi({ limit: 100 }),
   });
 

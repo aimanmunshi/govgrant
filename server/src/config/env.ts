@@ -5,7 +5,9 @@ dotenv.config();
 
 const envSchema = z.object({
   PORT: z.string().default('5000'),
-  CLIENT_URL: z.string().url(),
+  // Strip any trailing slash so CORS origin checks and email-link building
+  // can't be broken by how the env var happens to be formatted
+  CLIENT_URL: z.string().url().transform((url) => url.replace(/\/+$/, '')),
   DATABASE_URL: z.string(),
   ACCESS_TOKEN_SECRET: z.string().min(10),
   REFRESH_TOKEN_SECRET: z.string().min(10),

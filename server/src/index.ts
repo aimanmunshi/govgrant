@@ -9,6 +9,7 @@ import dotenv from 'dotenv';
 import { execSync } from 'child_process';
 import { errorHandler } from './middleware/error.middleware';
 import { apiLimiter } from './middleware/rateLimit.middleware';
+import { env } from './config/env';
 import { initializeSocket } from './socket/socket.handler';
 import authRoutes from './routes/auth.routes';
 import proposalRoutes from './routes/proposal.routes';
@@ -39,7 +40,7 @@ const httpServer = createServer(app);
 
 export const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: env.CLIENT_URL,
     credentials: true,
   },
 });

@@ -1,10 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { FileText, Clock, CheckCircle, DollarSign } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'

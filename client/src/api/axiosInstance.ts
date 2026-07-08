@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { API_BASE_URL } from '@/lib/config';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
 
@@ -25,7 +26,7 @@ axiosInstance.interceptors.response.use(
 
       try {
         const response = await axios.post(
-          'http://localhost:5000/api/auth/refresh',
+          `${API_BASE_URL}/auth/refresh`,
           {},
           { withCredentials: true }
         );

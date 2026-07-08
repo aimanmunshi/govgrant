@@ -10,10 +10,6 @@ import { Separator } from '@/components/ui/separator'
 import { ArrowLeft, Building, Calendar, DollarSign, Layers, User } from 'lucide-react'
 import { ProposalStatus } from '@/types'
 
-const statusFlow: ProposalStatus[] = [
-  'DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'FUNDED'
-]
-
 const nextStatusOptions: Record<ProposalStatus, ProposalStatus[]> = {
   DRAFT: ['SUBMITTED'],
   SUBMITTED: ['UNDER_REVIEW', 'REJECTED'],

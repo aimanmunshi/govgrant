@@ -6,6 +6,7 @@ import {
   markNotificationReadApi,
   markAllNotificationsReadApi,
 } from '@/api/notification.api';
+import { API_URL } from '@/lib/config';
 import type { Notification } from '@/types';
 
 interface NotificationContextType {
@@ -54,7 +55,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
       }
     })();
 
-    const socket: Socket = io('http://localhost:5000', {
+    const socket: Socket = io(API_URL, {
       auth: { token: accessToken },
     });
 

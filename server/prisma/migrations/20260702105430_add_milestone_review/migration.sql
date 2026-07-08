@@ -5,6 +5,9 @@
   - Added the required column `milestoneId` to the `Review` table without a default value. This is not possible if the table is not empty.
 
 */
+-- CreateIndex (supports the existing proposalId FK once the composite unique index below is dropped)
+CREATE INDEX `Review_proposalId_idx` ON `review`(`proposalId`);
+
 -- DropIndex
 DROP INDEX `Review_proposalId_reviewerId_key` ON `review`;
 

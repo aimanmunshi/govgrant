@@ -60,7 +60,7 @@ export function NotificationBell() {
                 <li key={notification.id}>
                   <button
                     onClick={() => handleClick(notification)}
-                    className="flex w-full flex-col items-start gap-0.5 px-3 py-2.5 text-left hover:bg-muted"
+                    className="flex w-full flex-col items-start gap-0.5 px-3 py-2.5 text-left transition-colors hover:bg-muted"
                   >
                     <div className="flex w-full items-center gap-2">
                       {!notification.isRead && (

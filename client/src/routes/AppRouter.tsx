@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
@@ -27,19 +28,6 @@ import ForgotPasswordPage from "@/pages/ForgotPassword";
 import ResetPasswordPage from "@/pages/ResetPassword";
 import VerifyEmailPage from "@/pages/VerifyEmail";
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, isLoading } = useAuth();
-
-  if (isLoading) return (
-    <div className="h-screen w-screen flex items-center justify-center bg-slate-950">
-      <div className="text-slate-400">Loading...</div>
-    </div>
-  );
-
-  if (!user) return <Navigate to="/login" replace />;
-  return <>{children}</>;
-};
-
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
   if (isLoading) return null;
@@ -47,7 +35,34 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+const AdminGuard = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
+  if (user?.role !== 'ADMIN') return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+};
+
+// Animates route content in/out on navigation, without touching the surrounding layout
+const AnimatedOutlet = () => {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.12, ease: 'easeOut' }}
+        className="flex flex-1 flex-col"
+      >
+        <Outlet />
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+// Persistent layout for all protected routes — mounted once, not per-route,
+// so the sidebar/header survive navigation and only the page content animates
+const ProtectedLayout = () => {
   const { user, isLoading } = useAuth();
 
   if (isLoading) return (
@@ -57,12 +72,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   );
 
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== 'ADMIN') return <Navigate to="/dashboard" replace />;
-  return <>{children}</>;
-};
 
-// Layout wrapper with sidebar
-const AppLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider
       style={{
@@ -74,8 +84,8 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       <SidebarInset>
         <SiteHeader />
         <VerifyEmailBanner />
-        <div className="flex flex-1 flex-col overflow-auto">
-          {children}
+        <div className="relative flex flex-1 flex-col overflow-auto">
+          <AnimatedOutlet />
         </div>
       </SidebarInset>
     </SidebarProvider>
@@ -91,93 +101,27 @@ const AppRouter = () => {
         <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
         <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <AppLayout><Dashboard /></AppLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/proposals" element={
-          <ProtectedRoute>
-            <AppLayout><ProposalList /></AppLayout>
-          </ProtectedRoute>
-        } />
-        <Route
-  path="/milestones"
-  element={
-    <ProtectedRoute>
-      <AppLayout>
-        <MilestoneDashboard />
-      </AppLayout>
-    </ProtectedRoute>
-  }
-/>
-        <Route path="/proposals/new" element={
-          <ProtectedRoute>
-            <AppLayout><SubmitProposal /></AppLayout>
-          </ProtectedRoute>
-        } />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/proposals/:id" element={
-          <ProtectedRoute>
-            <AppLayout><ProposalDetail /></AppLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/proposals/:id/milestones" element={
-          <ProtectedRoute>
-            <AppLayout><MilestoneTracker /></AppLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/proposals/:id/review" element={
-          <ProtectedRoute>
-            <AppLayout><SubmitReview /></AppLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/proposals/:id/edit" element={
-  <ProtectedRoute>
-    <AppLayout><SubmitProposal /></AppLayout>
-  </ProtectedRoute>
-} />
-        <Route path="/reviews" element={
-  <ProtectedRoute>
-    <AppLayout><ReviewsDashboard /></AppLayout>
-  </ProtectedRoute>
-} />
-        <Route path="/users" element={
-  <AdminRoute>
-    <AppLayout><UsersPage /></AppLayout>
-  </AdminRoute>
-} />
-        <Route path="/activity" element={
-  <AdminRoute>
-    <AppLayout><ActivityPage /></AppLayout>
-  </AdminRoute>
-} />
-        <Route path="/help" element={
-  <ProtectedRoute>
-    <AppLayout><HelpPage /></AppLayout>
-  </ProtectedRoute>
-} />
-        <Route path="/settings" element={
-  <ProtectedRoute>
-    <AppLayout><SettingsPage /></AppLayout>
-  </ProtectedRoute>
-} />
-        <Route path="/notifications" element={
-  <ProtectedRoute>
-    <AppLayout><NotificationsPage /></AppLayout>
-  </ProtectedRoute>
-} />
-        <Route path="/account" element={
-  <ProtectedRoute>
-    <AppLayout><AccountPage /></AppLayout>
-  </ProtectedRoute>
-} />
+
+        <Route element={<ProtectedLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/proposals" element={<ProposalList />} />
+          <Route path="/proposals/new" element={<SubmitProposal />} />
+          <Route path="/proposals/:id" element={<ProposalDetail />} />
+          <Route path="/proposals/:id/milestones" element={<MilestoneTracker />} />
+          <Route path="/proposals/:id/review" element={<SubmitReview />} />
+          <Route path="/proposals/:id/edit" element={<SubmitProposal />} />
+          <Route path="/milestones" element={<MilestoneDashboard />} />
+          <Route path="/reviews" element={<ReviewsDashboard />} />
+          <Route path="/help" element={<HelpPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/account" element={<AccountPage />} />
+          <Route path="/users" element={<AdminGuard><UsersPage /></AdminGuard>} />
+          <Route path="/activity" element={<AdminGuard><ActivityPage /></AdminGuard>} />
+        </Route>
       </Routes>
-      
-        
-
     </BrowserRouter>
-
   );
 };
 

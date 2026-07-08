@@ -68,7 +68,7 @@ const NotificationsPage = () => {
                   <li key={notification.id}>
                     <button
                       onClick={() => handleClick(notification)}
-                      className="flex w-full items-start gap-3 px-6 py-4 text-left hover:bg-muted/50"
+                      className="flex w-full items-start gap-3 px-6 py-4 text-left transition-colors hover:bg-muted/50"
                     >
                       <div className={`flex size-8 shrink-0 items-center justify-center rounded-full ${config.className}`}>
                         <Icon className="size-4" />
